@@ -1,19 +1,17 @@
 # validating-two-linked-fates
 
-**Identifying and validating multi-dimensions of linked fate**
+**Identifying and validating multiple interpretations of linked fate**
 
 ## Overview
 
-This project identifies and validates two distinct dimensions of linked fate, a major measure of group consciousness in identity politics. One of the enduring questions in American politics is the relationship between race and class in the United States (US). Dawson argued in his **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) that African Americans are a cohesive racial group despite the growing class inequality within the group because for them an inseprable link exists between their group and individual utility. He named this concept of group conscioussness "linked fate". His black utility heuristics theory explained that linked fate was formed and forged by the experience of discrimination that African Americans had to share.
+This project demonstrates that people interprete linked fate, a major measure of group consciousness in identity politics, in two distinct ways. One of the enduring questions in American politics is the relationship between race and class in the United States (US). Dawson's **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) argues that African Americans are a cohesive racial group despite the growing class inequality within the group. It is because for them an inseprable link exists between their group and individual utility due to centuries-long experience of racial discrimination. He named this concept of group conscioussness "linked fate" and since then this concept has been widely applied to diverse racial and ethnic group contexts in the US and beyond.
 
-In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I focus on the problem of measuring linked fate. There are two specific ways to interpret the link between group and individual utility: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress, when their group make progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt, when their group gets hurt. These two dimensions of linked fate illustrate two different situations under which linked fate can emerge and strengthen.
+In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I focus on the fact people can interpret the link between group and individual utility in two different ways: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress, when their group make progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt, when their group gets hurt.
 
-Using a California-wide survey data (N = 4,435) and nobel measures of linked fate, we demonstrate the followings.
+Using a California-wide survey data (N = 4,435) and nobel measures of linked fate, we demonstrate that these distinctions matter for the empirical study of identity politics.
 
-1. Linked progress and linked hurt are two distinct dimensions of linked fate.
-2. Linked progress was on averge scored higher than linked hurt across all racial groups, though the differences were within margin of errors except for Latinx.
-3. People tend to indicate stronger group consciousness when they were asked about it through the standard linked fate question. White group consciousness disappeared when we used more specific linked fate qustions.
-
+1. Linked progress was on averge scored higher than linked hurt across all racial groups, though the differences were within margin of errors except for Latinx.
+2. People tend to indicate stronger group consciousness when they were asked about it through the standard linked fate question. White group consciousness disappeared when we used more specific linked fate qustions.
 
 ## Research design
 
