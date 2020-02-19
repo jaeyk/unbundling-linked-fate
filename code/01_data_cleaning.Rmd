@@ -30,7 +30,7 @@ pacman::p_load(
 ```
 
 ### 1. Importing data 
-
+  
 Survey participants: 4,435 
 Questions or features: 131 
 
@@ -69,7 +69,22 @@ df <- df %>%
 vis_miss(df)
 ```
 
-### 4. Rescaling and renaming variables 
+### 4. Multiple imputations 
+
+```{r}
+
+imp <- mice(df,
+     seed = 1234, # for reproducibility
+     m = 5, # the number of imputations
+     maxit = 10, # the max numbe of iterations 
+     method = "pmm", # predictive mean method
+     print = FALSE) 
+
+df <- mice::complete(imp) # the first imputed data
+
+```
+
+### 5. Rescaling and renaming variables 
 
 ```{r}
 
@@ -99,11 +114,13 @@ df <- df %>%
          "race" = "ETHNICITY")
 
 ```
-### 5. Recoding values
+
+### 6. Recoding values
 
 I dropped 21 partipants (less than 1% of the total survey participants) because we can't use Q16c variable to identify their race. 
 
 ```{r}
+
 table(df$race) # We only include those responded 1-5 for Q16c variable 
 
 df <- subset(df, race >= 1 & race <= 5) # Subsetting

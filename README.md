@@ -42,7 +42,9 @@ In the rest of the document, I state how I have **cleaned**, **analyzed**, and *
 
 ### Data cleaning \[[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/01_data_cleaning.Rmd)]
 
--   There is nothing particular here. I dropped irrelevant columns from the survey data and changed key variable names to make them more intelligible.
+- Recoded linked fate related questions so that all positive responses are positive numbers (2- agree strongly, 1- agree somewhat) and all negative responses are negative numbers (-1 - disagree somewhat, - 2 disagree strongly). I did so because this scale was easier for me to interpret the results.
+- Found 5-6% of missing responses from linked fate questions and imputed them using multiple imputations (the `mice` package in R).
+- Only included participants whose ethnicity was identified either as whites, African Americans, Latinx and Asian Americans. Consequently, I dropped 150 participants (3% of the total number of participants) who were non-identified using these measures.
 
 ### Data analysis and visualization \[[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/02_data_analysis.Rmd)]
 
