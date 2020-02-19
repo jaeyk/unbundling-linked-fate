@@ -1,10 +1,10 @@
 # validating-two-linked-fates
 
-**Analyzing List Experiments Using Block Random Assignment**
+**Identifying and validating multi-dimensions of linked fate**
 
 ## Motivation
 
-In this project, [Taeku Lee](https://www.law.berkeley.edu/our-faculty/faculty-profiles/taeku-lee/) and I have tried to understand to what extent South Korean citizens hold a biased attitude towards North Korean refugees. However, measuring sensitive attitudes in a survey is difficult because people tend to underreport their socially unpopular opinions, an effect also known as the [social desirability bias](https://en.wikipedia.org/wiki/Social_desirability_bias). We overcame this problem by using a survey questionnaire technique called [list experiment](https://dimewiki.worldbank.org/wiki/List_Experiments). In a list experiment, rather than bluntly ask the respondents what they think about North Korean refugees, respondents are instead given a list of items that include a sensitive statement about North Korean refugees and simply asked how many items they agreed with. Taeku Lee and I contributed equally to the research design, and I was responsible for most of the data analysis.
+This project identifies and validates two distinct dimensions of linked fate, a major measure of group consciousness in identity politics.
 
 ## Research design
 
@@ -35,11 +35,11 @@ One problem with the smartphone app approach is the non-representativeness of th
 
 In the rest of the document, I state how I have **wrangled**, **analyzed**, and **visualized** data. I shared the R code I used in each step.
 
-### Data wrangling [[Code](https://github.com/jaeyk/analyzing-list-experiments/blob/master/code/01_data_wrangling.Rmd)]
+### Data cleaning [[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/01_data_cleaning.Rmd)]
 
 - There is nothing particular here. I dropped irrelevant columns from the survey data and changed key variable names to make them more intelligible.
 
-### Data analysis [[Code](https://github.com/jaeyk/analyzing-list-experiments/blob/master/code/02_data_analysis.Rmd)]
+### Data analysis [[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/02_data_analysis.Rmd)]
 
 - Average treatment effect (ATE): As alluded, I used difference-in-means as an estimator of the average treatment effect. As can be seen below, using `dplyr` is quite handy in dealing with multiple treatment groups and treatment conditions. I calculated 95% confidence intervals using two-paired t-tests.
 
@@ -47,51 +47,18 @@ In the rest of the document, I state how I have **wrangled**, **analyzed**, and 
 
 - Bootstrapping confidence intervals: CATE requires subgroup analysis. Subgroup analysis reduces sample size and increases type II error (false negative). Particularly concerning is t-tests that are vulnerable to outliers. When we have a few observations, the effects of outliers could get stronger. To address this concern, I also calculated bootstrapped 95% confidence intervals. Bootstrapping is a non-parametric method, and it helps get more precise estimates of confidence intervals.
 
-```{R}
-diff_means_test <- function(data, treat, direct, indirect) {
-
-  diff_summary <- data %>%
-
-    # Summarize
-    summarise_each(
-      funs(
-
-        # Different in means
-        diff_t1 = mean(.[treat == 2], na.rm = T) - mean(.[treat == 1], na.rm = T),
-        diff_t2 = mean(.[treat == 3], na.rm = T) - mean(.[treat == 1], na.rm = T),
-        diff_t3 = mean(.[treat == 4], na.rm = T) - mean(.[treat == 1], na.rm = T),
-        diff_t4 = mean(.[treat == 5], na.rm = T) - mean(.[treat == 1], na.rm = T),
-
-        # Calculating confidence intervals
-        conf_t1 = ((t.test(.[treat == 2], .[treat == 1])$conf.int[2]) - t.test(.[treat == 1], .[treat == 1])$conf.int[1]) / 2,
-        conf_t2 = ((t.test(.[treat == 3], .[treat == 1])$conf.int[2]) - t.test(.[treat == 1], .[treat == 1])$conf.int[1]) / 2,
-        conf_t3 = ((t.test(.[treat == 4], .[treat == 1])$conf.int[2]) - t.test(.[treat == 1], .[treat == 1])$conf.int[1]) / 2,
-        conf_t4 = ((t.test(.[treat == 5], .[treat == 1])$conf.int[2]) - t.test(.[treat == 1], .[treat == 1])$conf.int[1]) / 2
-      ),
-      direct, indirect
-    )
-
-  diff_summary %>%
-    gather(stat, val) %>% # stat = variables, val = values
-    separate(stat, into = c("var", "stat", "treat"), sep = "_") %>% # var = measures, stat = diff or conf, group = treatment status, val = values
-    spread(stat, val) %>% # reorder columns
-    mutate(var = replace(var, var == "direct", "Direct bias")) %>% # rename variables
-    mutate(var = replace(var, var == "indirect", "Indirect bias"))
-
-}
-```
-
-### Data visualization [[Outputs](https://github.com/jaeyk/analyzing-list-experiments/blob/master/outputs/)]
-
-![](https://github.com/jaeyk/analyzing-list-experiments/blob/master/outputs/ate_results_plot.png)
-Figure 1. Estimated Average Treatment Effects
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
+Figure 1. Descriptive analysis
 
 Figure 1 shows the effects of estimated average treatment. We only find evidence of indirect bias toward North Korean refugees but not direct bias. Another noticeable fact is that the extent to which South Korean citizens hold a bias toward North Korean refugees is similar to their attitude toward Indonesian migrant workers.
 
-![](https://github.com/jaeyk/analyzing-list-experiments/blob/master/outputs/cate_comparison_plot.png)
-Figure 2. Estimated Conditional Average Treatment Effects with or without Bootstrapped Confidence Intervals
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/cor_coeffs_plot.png)
+Figure 2. Correlation tests results 
 
 Figure 2 compares the estimated effects of conditional average treatment with or without bootstrapped confidence intervals. Interestingly, no strong partisan difference exists concerning South Korean citizens' attitudes towards North Korean refugees. Bootstrapped confidence intervals made very marginal differences (they were slightly narrower than the non-bootstrapped confidence intervals).
+
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
+Figure 3. Difference of means test results
 
 ## Conclusion remarks
 
