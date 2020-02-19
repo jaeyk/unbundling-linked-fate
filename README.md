@@ -2,17 +2,21 @@
 
 **Identifying and validating multi-dimensions of linked fate**
 
-## Overview
+## Motivation
 
 This project identifies and validates two distinct dimensions of linked fate, a major measure of group consciousness in identity politics. One of the enduring question in American politics is the relationship between race and class in the United States (US). Dawson argued in his _Behind the Mule_ (1994) that African Americans are a cohesive racial group despite the growing class inequality within the group because for them an inseprable link exists between their group and individual utility. He named this concept of group conscioussness "linked fate". His black utility heuristics theory explained that linked fate was formed and forged by the experience of discrimination that African Americans had to share. In practice, this concept was measured by the following survey question: "Do you agree or disagree - What happens to your group in this country will have something to do with happens in my life." Since the pulibication of Dawson's pioonering work, linked fate has been used in measuring group consciousness among diverse racial groups outside the original African American context. Scholars have debated whether the wide spread use of linked fate is extrapolation. The initial discussion has been focusing on the application of linked fate to Asian Americans and Latinx. The 2016 US Presidential Election has increased the interests of scholars in white group politics and whether linked fate is applicable to whites became a new source of debate.
 
 In this project, [Alan Yan] and I focus on the measurement problem of linked fate especially its connection to the original theory. There are two specific ways to interpret the link between group and individual utility: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress, when their group make progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt, when their group gets hurt. These two dimensions of linked fate illustrate two different situations under which linked fate can emerge and strengthen. The former stresses a situation when having a link with the group can bring more benefits. The latter emphasizes a situation when an individual was bound to suffer with the rest of their group members. For the sake of space, we do not intend to discuss the conceptual differences in detail. It is sufficient to say that the original theory was more aligned linked hurt than linked hurt given its focus on African Americans' collective experience of racial discrimination.
+
+## Research design
 
 This progress report exclusively focuses on the data analysis. We embedded three linked fate questions: the standard linked fate question plus questions on linked progress and linked hurt in a California-wide survey carried out by the Institute of Government Studies at the University of California Berkeley in June 2019. These questions were randomly ordered to get around the order effect. The responses for these questions were collected using four multiple choices (1 - Agree strongly, 2 - Agree somewhat, 3 - Disagree somewhat, 4 - Disagree strongly).
 
 - **Linked fate**: Do you agree or disagree - What happens to (Latinos/ whites/ blacks and African Americans / Asians/ Pacific Islanders/ American Indians) in this country will have something to do with what happens in my life
 - **Linked progress**: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
 - **Linked hurt**: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
+
+## Findings
 
 The results demonstrate the followings.
 
@@ -30,7 +34,7 @@ In the rest of the document, I state how I have **cleaned**, **analyzed**, and *
 
 ### Data analysis and visualization \[[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/02_data_analysis.Rmd)]
 
-#### Mean and standard errors
+#### Measures of Central Tendency
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Descriptive analysis
