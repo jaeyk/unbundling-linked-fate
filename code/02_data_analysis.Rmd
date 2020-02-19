@@ -105,7 +105,9 @@ For more information, see [this blog post](http://www.sthda.com/english/wiki/cor
 - All tests are two-sided.
 
 ```{r}
+
 table(df$race)
+
 ```
 
 #### 3.1. Density plots
@@ -117,9 +119,9 @@ corr_plot <- function(data){data %>%
   ggplot(aes(x = Responses)) + geom_density() + theme_base() + labs(y = "Density") + facet_wrap(~Measures)}
 
 # Apply to each data and bind htem 
-p1 <- corr_plot(df %>% filter(race == "Asian")) + ggtitle("Asian Americans")
-p2 <- corr_plot(df %>% filter(race == "Black")) + ggtitle("Blacks")
-p3 <- corr_plot(df %>% filter(race == "White")) + ggtitle("Whites")
+p1 <- corr_plot(df %>% filter(race == "Asians")) + ggtitle("Asian Americans")
+p2 <- corr_plot(df %>% filter(race == "Blacks")) + ggtitle("Blacks")
+p3 <- corr_plot(df %>% filter(race == "Whites")) + ggtitle("Whites")
 p4 <- corr_plot(df %>% filter(race == "Latinx")) + ggtitle("Latinx")
 
 p1 + p4 + p3 + p2

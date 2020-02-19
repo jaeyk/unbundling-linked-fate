@@ -9,13 +9,6 @@ html_document:
 
 ## 0. Setup 
 
-I tweaked the global option of the R Markdown to enlarge figures produced by ggplot2.
-
-```{r global_options, include=FALSE}
-knitr::opts_chunk$set(fig.width = 12, fig.height = 8, 
-                      echo = FALSE, warning = FALSE, message = FALSE) # global setting for enlarging image size
-```
-
 ```{r}
 
 # Clean up the environment
@@ -113,18 +106,22 @@ I dropped 21 partipants (less than 1% of the total survey participants) because 
 ```{r}
 table(df$race) # We only include those responded 1-5 for Q16c variable 
 
-df <- subset(df, race >= 1 & race <= 5)
+df <- subset(df, race >= 1 & race <= 5) # Subsetting
 
 length(df$race)
 
+# Recoding 
+
 df$race <- df$race %>%
   as.character() %>%
-  recode("1" = "White", 
+  recode("1" = "Whites", 
         "2" = "Latinx", 
-        "3" = "Black", 
-        "4" = "Asian", 
+        "3" = "Blacks", 
+        "4" = "Asians", 
         "5" = "Other") %>%
   as.factor()
+
+# Reordering factors 
 
 ```
 
