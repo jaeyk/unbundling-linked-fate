@@ -4,7 +4,7 @@
 
 ## Overview
 
-This project demonstrates that people interprete linked fate, a major measure of group consciousness in identity politics, in two distinct ways. Dawson's **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) argues that African Americans remain a cohesive racial group despite the growing within-group economic inequality because centuries-long experience of racial discrimination ties their individual and group utility together. He called this connection "linked fate" and since then linked fate has become a popular measure of group solidarity across diverse group contexts (Google search results yield more than 2700 results).
+This project demonstrates that people interprete linked fate, a major measure of group consciousness in identity politics, in two distinct ways. Dawson's **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) argues that African Americans remain a cohesive racial group despite the growing within-group economic inequality because centuries-long experience of racial discrimination ties their individual and group utility together. He called this connection "linked fate" and since then linked fate has become a popular measure of group solidarity across diverse group contexts (Google Scholar search yields more than 2700 results).
 
 In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I argue the linked fate literature has a measure problem. Scholars have measured the expressed strength of linked fate by asking survey respondents to what extent they agree what happens to their group also influences their life. The issue is people may think about that connectoin in two different ways: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress, when their group make progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt, when their group gets hurt. According to the black utility heuristics theory, the linked hurt interpretation is more plausible. But how do we know?
 
@@ -21,7 +21,7 @@ The standard way of measuring linked fate is asking the following question to th
 
 - **Linked fate**: Do you agree or disagree - What happens to (Latinos/ whites/ blacks and African Americans / Asians/ Pacific Islanders/ American Indians) in this country will have something to do with what happens in my life
 
-In addition to this standard measure, we added two novel measures of linked fate that distinguish whether linked fate is interpreted in the context of a positive or a negative connection.
+In addition to this standard measure, we added two novel measures of linked fate that distinguish whether linked fate is interpreted in the context of a positive or a negative connection between group and individual utility.
 
 - **Linked progress**: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
 - **Linked hurt**: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
@@ -73,6 +73,14 @@ Figure 2. Descriptive analysis
 Figure 3. Correlation tests results
 
 Figure 2 compares the estimated effects of conditional average treatment with or without bootstrapped confidence intervals. Interestingly, no strong partisan difference exists concerning South Korean citizens' attitudes towards North Korean refugees. Bootstrapped confidence intervals made very marginal differences (they were slightly narrower than the non-bootstrapped confidence intervals).
+
+#### Reliability tests
+
+- Conger's Kappa
+- Bootstrapped Conger's Kappa
+
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/reliability_tests_plot.png)
+Figure 4. Correlation tests results
 
 #### Difference of means test
 
