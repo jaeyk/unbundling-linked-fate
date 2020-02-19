@@ -1,0 +1,217 @@
+---
+title: "Data cleaning"
+author: "Jae Yeon Kim"
+output:
+html_document: 
+  toc: true
+  theme: united
+---
+
+## 0. Setup 
+
+I tweaked the global option of the R Markdown to enlarge figures produced by ggplot2.
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width = 12, fig.height = 8, 
+                      echo = FALSE, warning = FALSE, message = FALSE) # global setting for enlarging image size
+```
+
+```{r}
+
+# Clean up the environment
+
+# rm(list = ls())
+
+# Import libraries (adapted from this link: https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them)
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+        tidyverse, # for the tidyverse framework
+        naniar, # for missing data
+        mice, # for imputation
+        ggpubr, # for arranging ggplots   
+        ggthemes, # for fancy ggplot themes
+        BaylorEdPsych, # testing patterns among missing values
+        plotrix # for various plotting functions
+)
+
+```
+
+### 1. Importing data 
+
+```{r}
+
+# Importing data 
+df <- read_csv("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv")
+
+# Excluding other respondents (too small to calucate CIs)
+df <- subset(df, race != "Other")
+
+```
+
+### 2. Descriptive analysis 
+
+#### 2.1. Mean and SEs
+
+```{r}
+
+fate_stat <- df %>%
+  group_by(race) %>%
+  summarize(mean = mean(linked_fate, na.rm = T),
+            se = std.error(linked_fate))
+
+progress_stat <- df %>%
+  group_by(race) %>%
+  summarize(mean = mean(linked_progress, na.rm = T),
+            se = std.error(linked_progress))
+
+hurt_stat <- df %>%
+  group_by(race) %>%
+  summarize(mean = mean(linked_hurt, na.rm = T),
+            se = std.error(linked_hurt))
+
+summary_stat <- bind_rows(mutate(fate_stat, Type = "Linked fate"),
+                          mutate(progress_stat, Type = "Linked progress"),
+                          mutate(hurt_stat, Type = "Linked hurt"))
+  
+```
+
+#### 2.2. Visualizing the results 
+
+```{r}
+
+summary_stat %>%  
+  ggplot(aes(x = fct_reorder(race, mean), y = mean, 
+             ymax = mean + se, 
+             ymin = mean - se, col = Type)) +
+    geom_pointrange() +
+    theme_base() +
+    coord_flip() +
+    labs(x = "Race", y = "Mean",
+         title = "Descriptive analysis") 
+
+ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", width = 10)
+```
+
+
+### 3. Correlation analysis
+
+For more information, see [this blog post](http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r).
+
+- Person correlation: 1. assuming a linear dependence between X and Y, assuming X and Y are from normal distribution 
+- Kendal tau and Spearman rho: rank-based correlation coefficients 
+- All tests are two-sided.
+
+```{r}
+table(df$race)
+```
+
+#### 3.1. Estimating correlation coefficients
+
+```{r}
+
+# Individual case analysis 
+
+# Fate - Progress
+fate_progress <- df %>%
+  group_by(race) %>%
+  summarize(Pearson = cor.test(linked_fate, linked_progress, na.rm = TRUE, method = c("pearson"))$estimate %>% as.numeric(),
+            Kendall = cor.test(linked_fate, linked_progress, na.rm = TRUE, method = c("kendall"))$estimate %>% as.numeric(),
+            Spearman = cor.test(linked_fate, linked_progress, na.rm = TRUE, method = c("spearman"))$estimate %>% as.numeric())
+
+# Fate - Hurt 
+fate_hurt <- df %>%
+  group_by(race) %>%
+  summarize(Pearson = cor.test(linked_fate, linked_hurt, na.rm = TRUE, method = c("pearson"))$estimate %>% as.numeric(),
+            Kendall = cor.test(linked_fate, linked_hurt, na.rm = TRUE, method = c("kendall"))$estimate %>% as.numeric(),
+            Spearman = cor.test(linked_fate, linked_hurt, na.rm = TRUE, method = c("spearman"))$estimate %>% as.numeric())
+
+# Progress - Hurt 
+progress_hurt <- df %>%
+  group_by(race) %>%
+  summarize(Pearson = cor.test(linked_progress, linked_hurt, na.rm = TRUE, method = c("pearson"))$estimate %>% as.numeric(),
+            Kendall = cor.test(linked_progress, linked_hurt, na.rm = TRUE, method = c("kendall"))$estimate %>% as.numeric(),
+            Spearman = cor.test(linked_progress, linked_hurt, na.rm = TRUE, method = c("spearman"))$estimate %>% as.numeric())
+
+# Combining the results 
+
+cor_results <- bind_rows(mutate(fate_progress, type = "fate_progress"),
+          mutate(fate_hurt, type = "fate_hurt"),
+          mutate(progress_hurt, type = "progress_hurt"))
+
+cor_results <- cor_results %>%
+  gather(Tests, coeffs, c("Pearson", "Kendall", "Spearman"))
+```
+
+#### 3.2. Visualizing the results  
+
+```{r}
+cor_results %>%
+  ggplot(aes(x = fct_reorder(race, coeffs), y = coeffs, fill = Tests)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~type) +
+  coord_flip() + 
+  theme_base() +
+  labs(x = "Race", y = "Correlation coefficients", 
+       title = "Correlation test resuts")
+
+ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
+```
+
+### 4. Difference-in-means analysis 
+
+#### 4.1. Difference-in-means tests (T-tests)
+
+```{r}
+
+# Individual case analysis 
+
+diff_fate_progress <- df %>%
+  group_by(race) %>%
+  summarize(
+    diff = mean(linked_fate, na.rm = T) - mean(linked_progress, na.rm = T),
+    conf = ((t.test(linked_fate, linked_progress)$conf.int[2]) - t.test(linked_fate, linked_progress)$conf.int[1])/2
+    )
+
+diff_fate_hurt <- df %>%
+  group_by(race) %>%
+  summarize(
+    diff = mean(linked_fate, na.rm = T) - mean(linked_hurt, na.rm = T),
+    conf = ((t.test(linked_fate, linked_hurt)$conf.int[2]) - t.test(linked_fate, linked_hurt)$conf.int[1])/2
+    )
+
+diff_progress_hurt <- df %>%
+  group_by(race) %>%
+  summarize(
+    diff = mean(linked_progress, na.rm = T) - mean(linked_hurt, na.rm = T),
+    conf = ((t.test(linked_progress, linked_hurt)$conf.int[2]) - t.test(linked_progress, linked_hurt)$conf.int[1])/2
+    )
+
+# Combining the results 
+
+diff_results <- bind_rows(mutate(diff_fate_progress, Type = "fate_progress"),
+          mutate(diff_fate_hurt, Type = "fate_hurt"),
+          mutate(diff_progress_hurt, Type = "progress_hurt"))
+
+```
+
+#### 4.2. Visualizing the results 
+
+```{r}
+
+diff_results %>%  
+  ggplot(aes(x = fct_reorder(race, diff), y = diff, 
+             ymax = diff + conf, 
+             ymin = diff - conf)) +
+    geom_pointrange() +
+    theme_base() +
+    coord_flip() +
+    labs(x = "Race", y = "Difference in means",
+         title = "Difference of means test results") +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    facet_wrap(~Type)
+
+ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png", width = 10)
+
+```
+
