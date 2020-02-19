@@ -151,19 +151,10 @@ fate_hurt <- df %>%
             Kendall = cor.test(linked_fate, linked_hurt, method = c("kendall"))$estimate %>% as.numeric(),
             Spearman = cor.test(linked_fate, linked_hurt, method = c("spearman"))$estimate %>% as.numeric())
 
-# Progress - Hurt 
-progress_hurt <- df %>%
-  group_by(race) %>%
-  summarize(Pearson = cor.test(linked_progress, linked_hurt, method = c("pearson"))$estimate %>% as.numeric(),
-            Boot_Pearson = boot.cor.bca(linked_progress, linked_hurt)$Boot.values %>% mean(),
-            Kendall = cor.test(linked_progress, linked_hurt, method = c("kendall"))$estimate %>% as.numeric(),
-            Spearman = cor.test(linked_progress, linked_hurt, method = c("spearman"))$estimate %>% as.numeric())
-
 # Combining the results 
 
 cor_results <- bind_rows(mutate(fate_progress, type = "fate_progress"),
-          mutate(fate_hurt, type = "fate_hurt"),
-          mutate(progress_hurt, type = "progress_hurt"))
+          mutate(fate_hurt, type = "fate_hurt"))
 
 cor_results <- cor_results %>%
   gather(Test, coeffs, c("Pearson", "Boot_Pearson", "Kendall", "Spearman"))
@@ -186,6 +177,7 @@ cor_results %>%
        title = "Correlation test resuts")
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
+
 ```
 
 ### 4. Difference-in-means analysis 
