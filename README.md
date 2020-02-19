@@ -2,7 +2,7 @@
 
 **Identifying and validating multi-dimensions of linked fate**
 
-## Motivation
+## Overview
 
 This project identifies and validates two distinct dimensions of linked fate, a major measure of group consciousness in identity politics. One of the enduring questions in American politics is the relationship between race and class in the United States (US). Dawson argued in his **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) that African Americans are a cohesive racial group despite the growing class inequality within the group because for them an inseprable link exists between their group and individual utility. He named this concept of group conscioussness "linked fate". His black utility heuristics theory explained that linked fate was formed and forged by the experience of discrimination that African Americans had to share. In practice, this concept was measured by the following survey question: "Do you agree or disagree - What happens to your group in this country will have something to do with happens in my life."
 
