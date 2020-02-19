@@ -18,7 +18,7 @@ This progress report exclusively focuses on the data analysis. We embedded three
 
 ## Findings
 
-The results demonstrate the followings.
+The survey data analysis demonstrates the followings.
 
 1. Linked progress and linked hurt are two distinct dimensions of linked fate.
 2. Linked progress was on averge scored higher than linked hurt across all racial groups, though the differences were within margin of errors except for Latinx.
