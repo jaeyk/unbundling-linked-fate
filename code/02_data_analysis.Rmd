@@ -83,15 +83,15 @@ summary_stat <- bind_rows(mutate(fate_stat, Type = "Linked fate"),
 
 summary_stat %>%  
   ggplot(aes(x = fct_reorder(race, mean), y = mean, 
-             ymax = mean + se, 
-             ymin = mean - se, col = Type)) +
+             ymax = mean + 2*se, 
+             ymin = mean - 2*se, col = Type)) +
     geom_pointrange() +
     theme_base() +
     geom_hline(yintercept = 0, linetype = "dashed") +
     labs(x = "Race", y = "Mean",
          title = "Descriptive analysis") 
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png")
+ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", height = 7)
 ```
 
 
