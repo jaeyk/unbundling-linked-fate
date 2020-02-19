@@ -8,17 +8,8 @@ This project identifies and validates two distinct dimensions of linked fate, a 
 
 ## Research design
 
-### Random assignment
-The experimental manipulation is in the statements that are read. We divided survey participants into control and treatment groups. The control group was exposed to a list of naive statements (e.g., about the weather or sports). The treatment groups were exposed to an identical list plus one sensitive statement that accounts for ethnic bias. Subsequently, we asked them to report how many statements they supported. Since the researcher did not know which specific items a respondent agreed with, the respondents knew that their privacy was protected.
-
-### Block random assignment
-We assumed that political ideology is a covariate because the Korean conservative ideology has emphasized anti-Communism and the liberal political ideology has stressed ethnic unity. We hypothesized that this contrasting position toward North Korea could also be manifested in the way in which conservatives and liberals view North Korean refugees. For that reason, we did a random assignment blocking on political ideology. Random assignment ensures covariate balances between treatment and control groups by design. However, variability exists in sampling. Even though the differences-in-means are unbiased estimators of average treatment effects (ATEs; the difference between two potential outcomes), we should still worry about uncertainty around these estimates. For example, by chance, most liberals could be assigned to the control group, whereas most conservatives could be assigned to the treatment group. Even if an unbalanced assignment occurs, it does not mean that these individuals are selected into these groups. Nevertheless, in a circumstance like this, the difference-in-means becomes a less precise estimate of the ATE. Block random assignment reduces sampling variability by making sure a specific proportion of a subgroup of interest is assigned to treatment ([Gerber and Green 2012](https://isps.yale.edu/FEDAI): 73).
-
 ### Random ordering
 The order of the two experiments is rotated so that we can circumvent the possible contamination effects of question order.
-
-### Direct and indirect bias measures
-In addition, we distinguished direct (stereotype) and indirect bias (more policy-driven) and measured both of them. For want of space, I did not delve into why their differences matter from the perspective of political psychology and racial and ethnic politics.
 
 ## Data collection: Mobile Survey Using Matched Random Sampling
 To reduce the cost of survey collection, we used a smartphone app-based survey. The mobile survey is good as increasingly more people only use mobile phones. The 2015 National Health Interview Survey conducted by the National Center for Health Statistics reports that nearly one-half of American homes (47.4%) use only wireless telephones. Using a smartphone app-based survey is particularly relevant in South Korea as the country is the most wired in the world. The South Korean smartphone ownership rate is the world's highest according to the 2016 Pew Research Center report. Among the 18–34 age group, the rate was 100%. Even for the 35+ age group, the rate was still impressive at 83%.
@@ -41,26 +32,34 @@ In the rest of the document, I state how I have **wrangled**, **analyzed**, and 
 
 ### Data analysis [[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/02_data_analysis.Rmd)]
 
-- Average treatment effect (ATE): As alluded, I used difference-in-means as an estimator of the average treatment effect. As can be seen below, using `dplyr` is quite handy in dealing with multiple treatment groups and treatment conditions. I calculated 95% confidence intervals using two-paired t-tests.
-
-- Conditional average treatment effect (CATE): Ideology was used as a blocking variable. Thus, ideology is unrelated to the assignment process. I subdivided the survey data according to the respondents' ideological position and calculated difference-in-means within each stratum. These differences-in-means are unbiased estimators of average treatment effects that are conditional on ideology.
-
-- Bootstrapping confidence intervals: CATE requires subgroup analysis. Subgroup analysis reduces sample size and increases type II error (false negative). Particularly concerning is t-tests that are vulnerable to outliers. When we have a few observations, the effects of outliers could get stronger. To address this concern, I also calculated bootstrapped 95% confidence intervals. Bootstrapping is a non-parametric method, and it helps get more precise estimates of confidence intervals.
+#### Mean and standard errors
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Descriptive analysis
 
 Figure 1 shows the effects of estimated average treatment. We only find evidence of indirect bias toward North Korean refugees but not direct bias. Another noticeable fact is that the extent to which South Korean citizens hold a bias toward North Korean refugees is similar to their attitude toward Indonesian migrant workers.
 
+#### Density plots
+
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/density_plot.png)
+Figure 2. Descriptive analysis
+
+#### Correlation tests
+
+- Pearson
+- Bootstrapped Pearson
+- Kendall
+- Spearman
+
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/cor_coeffs_plot.png)
-Figure 2. Correlation tests results 
+Figure 3. Correlation tests results
 
 Figure 2 compares the estimated effects of conditional average treatment with or without bootstrapped confidence intervals. Interestingly, no strong partisan difference exists concerning South Korean citizens' attitudes towards North Korean refugees. Bootstrapped confidence intervals made very marginal differences (they were slightly narrower than the non-bootstrapped confidence intervals).
 
-![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
-Figure 3. Difference of means test results
+#### Difference of means test
 
-## Conclusion remarks
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
+Figure 4. Difference of means test results
 
 - In the additional analysis, we have found something interesting about how party ID interacts with responses. However, we are cautioned to make a strong claim about this pattern because we did not use party ID as a blocking variable. This relationship is an association.
 - Ideological moderates are not exactly positioned in the middle. They could be leaning towards either side of the ideological spectrum. If that is the case, replacing their responses with NAs and then imputing them using multiple imputations could be a more precise way to investigate the causal effect of ideology on ethnic relations in South Korea.
