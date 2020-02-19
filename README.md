@@ -28,7 +28,7 @@ In addition to this standard measure, we added two novel measures of linked fate
 
 Our main hypotheses are as follows:
 1. Linked fate, linked progress, and linked hurt will yield staitially different level of responses.
-2. If the meausure is consistent with Dawson's theory, linked hurt will be more strongly correlated with linked hurt than linked progress responses especially among African Americans.
+2. If the meausure is consistent with Dawson's theory, linked hurt will be more strongly correlated with linked hurt than linked progress responses especially among African Americans (convergent validity).
 
 ### Data collection
 
