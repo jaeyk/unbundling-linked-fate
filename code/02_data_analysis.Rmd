@@ -91,10 +91,10 @@ summary_stat %>%
     labs(x = "Race", y = "Mean",
          title = "Descriptive analysis") 
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", height = 7)
+ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", height = 5)
 ```
 
-
+  
 ### 3. Correlation analysis
 
 For more information, see [this blog post](http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r).
