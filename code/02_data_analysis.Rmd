@@ -180,7 +180,7 @@ cor_results %>%
   facet_wrap(~race) +
   coord_flip() + 
   theme_base() +
-  labs(x = "Race", y = "Correlation coefficients", 
+  labs(x = "Race", y = "Stacked correlation coefficients", 
        title = "Correlation test resuts")
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
