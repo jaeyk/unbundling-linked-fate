@@ -124,7 +124,7 @@ p4 <- corr_plot(df %>% filter(race == "Latinx")) + ggtitle("Latinx")
 
 p1 + p4 + p3 + p2
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/density_plot.png")
+ggsave("/home/jae/validating-two-linked-fates/outputs/density_plot.png", width = 10)
 ```
 
 #### 3.2. Four correlation coefficients 
@@ -172,7 +172,7 @@ cor_results <- cor_results %>%
 
 ```{r}
 cor_results %>%
-  mutate(coeffs = round(coeffs, 4)) %>% 
+  mutate(coeffs = round(coeffs, 2)) %>% 
   ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = type)) +
   geom_col(position = "stack") +
   geom_text(aes(label = coeffs),
