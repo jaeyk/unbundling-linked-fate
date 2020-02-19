@@ -10,7 +10,7 @@ In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and 
 
 Using a California-wide survey data (N = 4,435) and nobel measures of linked fate, we demonstrate that these distinctions matter for the empirical study of identity politics.
 
-1. Linked progress was on averge scored higher than linked hurt across all racial groups, though the differences were within margin of errors except for Latinx. Dawson's original theory was more consistent with the interpretation of linked fate as linked hurt. But that is not the prevailing interpretion even among African Americans.
+1. Linked progress was on averge scored higher than linked hurt across all racial groups, though the differences were within margin of errors except for Latinx. Even though Dawson's original theory was more consistent with the interpretation of linked fate as linked hurt, that was not a prevailing interpretion even among African Americans.
 2. People tend to indicate stronger group consciousness when they were asked about it through the standard linked fate question. White group consciousness disappeared when we used more specific linked fate qustions. This finding raises a question about how white group politics is different from that of other racial groups.
 
 ## Research design
