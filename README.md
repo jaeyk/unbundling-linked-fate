@@ -8,7 +8,7 @@ This project identifies and validates two distinct dimensions of linked fate, a 
 
 In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I focus on the problem of measuring linked fate. There are two specific ways to interpret the link between group and individual utility: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress, when their group make progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt, when their group gets hurt. These two dimensions of linked fate illustrate two different situations under which linked fate can emerge and strengthen.
 
-Using a California-wide survey data (N = 4,435), we demonstrate the followings.
+Using a California-wide survey data (N = 4,435) and nobel measures of linked fate, we demonstrate the followings.
 
 1. Linked progress and linked hurt are two distinct dimensions of linked fate.
 2. Linked progress was on averge scored higher than linked hurt across all racial groups, though the differences were within margin of errors except for Latinx.
