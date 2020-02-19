@@ -153,8 +153,8 @@ fate_hurt <- df %>%
 
 # Combining the results 
 
-cor_results <- bind_rows(mutate(fate_progress, type = "fate_progress"),
-          mutate(fate_hurt, type = "fate_hurt"))
+cor_results <- bind_rows(mutate(fate_progress, Type = "fate_progress"),
+          mutate(fate_hurt, Type = "fate_hurt"))
 
 cor_results <- cor_results %>%
   gather(Test, coeffs, c("Pearson", "Boot_Pearson", "Kendall", "Spearman"))
@@ -165,8 +165,8 @@ cor_results <- cor_results %>%
 
 ```{r}
 cor_results %>%
-  mutate(coeffs = round(coeffs, 2)) %>% 
-  ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = type)) +
+  mutate(coeffs = round(coeffs, 4)) %>% 
+  ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
   geom_col(position = "stack") +
   geom_text(aes(label = coeffs),
               position = position_stack(vjust = .5)) +
