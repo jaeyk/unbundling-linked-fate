@@ -32,19 +32,19 @@ In the rest of the document, I state how I have **wrangled**, **analyzed**, and 
 
 ### Data analysis [[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/02_data_analysis.Rmd)]
 
-#### Mean and standard errors
+**Mean and standard errors**
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Descriptive analysis
 
 Figure 1 shows the effects of estimated average treatment. We only find evidence of indirect bias toward North Korean refugees but not direct bias. Another noticeable fact is that the extent to which South Korean citizens hold a bias toward North Korean refugees is similar to their attitude toward Indonesian migrant workers.
 
-#### Density plots
+**Density plots**
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/density_plot.png)
 Figure 2. Descriptive analysis
 
-#### Correlation tests
+**Correlation tests**
 
 - Pearson
 - Bootstrapped Pearson
@@ -56,7 +56,7 @@ Figure 3. Correlation tests results
 
 Figure 2 compares the estimated effects of conditional average treatment with or without bootstrapped confidence intervals. Interestingly, no strong partisan difference exists concerning South Korean citizens' attitudes towards North Korean refugees. Bootstrapped confidence intervals made very marginal differences (they were slightly narrower than the non-bootstrapped confidence intervals).
 
-#### Difference of means test
+**Difference of means test**
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
 Figure 4. Difference of means test results
