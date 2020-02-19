@@ -4,7 +4,7 @@
 
 ## Overview
 
-This project identifies and validates two distinct dimensions of linked fate, a major measure of group consciousness in identity politics. One of the enduring questions in American politics is the relationship between race and class in the United States (US). Dawson argued in his **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) that African Americans are a cohesive racial group despite the growing class inequality within the group because for them an inseprable link exists between their group and individual utility. He named this concept of group conscioussness "linked fate". His black utility heuristics theory explained that linked fate was formed and forged by the experience of discrimination that African Americans had to share. In practice, this concept was measured by the following survey question: "Do you agree or disagree - What happens to your group in this country will have something to do with happens in my life."
+This project identifies and validates two distinct dimensions of linked fate, a major measure of group consciousness in identity politics. One of the enduring questions in American politics is the relationship between race and class in the United States (US). Dawson argued in his **[Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false)** (1994) that African Americans are a cohesive racial group despite the growing class inequality within the group because for them an inseprable link exists between their group and individual utility. He named this concept of group conscioussness "linked fate". His black utility heuristics theory explained that linked fate was formed and forged by the experience of discrimination that African Americans had to share.
 
 In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I focus on the problem of measuring linked fate. There are two specific ways to interpret the link between group and individual utility: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress, when their group make progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt, when their group gets hurt. These two dimensions of linked fate illustrate two different situations under which linked fate can emerge and strengthen.
 
@@ -17,11 +17,25 @@ Using a California-wide survey data (N = 4,435) and nobel measures of linked fat
 
 ## Research design
 
-This progress report focuses on the data analysis exclusively. We embedded three linked fate questions: the standard linked fate question plus questions on linked progress and linked hurt in a California-wide survey (N = 4,435) carried out by the Institute of Government Studies at the University of California Berkeley in June 2019. Random sampling was used based on publicly availalbe email addresses in voter records as sampling frame (see this [link](https://www.latimes.com/politics/la-na-pol-2020-how-poll-was-done-20190613-story.html) for more information on their sampling methods and this [link](https://sda.berkeley.edu/sdaweb/docs/IGS_2019_02/DOC/hcbkfx0.htm) for list of itmes used in the survey). These questions were randomly ordered to get around the order effect. The responses for these questions were collected using four multiple choices (1 - Agree strongly, 2 - Agree somewhat, 3 - Disagree somewhat, 4 - Disagree strongly).
+### Hypothesis
+
+The standard way of measuring linked fate is asking the following question to the survey participants.
 
 - **Linked fate**: Do you agree or disagree - What happens to (Latinos/ whites/ blacks and African Americans / Asians/ Pacific Islanders/ American Indians) in this country will have something to do with what happens in my life
+
+In addition to this standard measure, we added two nobel measures of linked fate that distinguish whether linked fate is interpreted in the context of a positive or a negative connection.
+
 - **Linked progress**: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
 - **Linked hurt**: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
+
+Our main hypothesis is these measures will yield staitially different level of responses.
+
+### Data collection
+
+We test this hypothesis by embedding these three questions in a California-wide survey (N = 4,435) carried out by the Institute of Government Studies at the University of California Berkeley in June 2019.
+
+- Random sampling was used based on publicly availalbe email addresses in voter records as sampling frame (see this [link](https://www.latimes.com/politics/la-na-pol-2020-how-poll-was-done-20190613-story.html) for more information on their sampling methods and this [link](https://sda.berkeley.edu/sdaweb/docs/IGS_2019_02/DOC/hcbkfx0.htm) for list of itmes used in the survey). - These questions were randomly ordered to get around the order effect.
+- The responses for these questions were collected using four multiple choices (1 - Agree strongly, 2 - Agree somewhat, 3 - Disagree somewhat, 4 - Disagree strongly).
 
 ## Workflow
 
