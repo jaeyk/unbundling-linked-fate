@@ -26,7 +26,9 @@ In addition to this standard measure, we added two novel measures of linked fate
 - **Linked progress**: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
 - **Linked hurt**: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
 
-Our main hypothesis is these measures will yield staitially different level of responses.
+Our main hypotheses are as follows:
+1. Linked fate, linked progress, and linked hurt will yield staitially different level of responses.
+2. If the meausure is consistent with Dawson's theory, linked hurt will be more strongly correlated with linked hurt than linked progress responses especially among African Americans.
 
 ### Data collection
 
