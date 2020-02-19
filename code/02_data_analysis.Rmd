@@ -214,7 +214,7 @@ diff_boot_plot <- diff_results %>%
 
 ggarrange(diff_plot, diff_boot_plot, nrow = 2, ncol = 1)
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png", width = 7)
+ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png", width = 9)
 
 ```
 
