@@ -80,11 +80,22 @@ vis_miss(df)
 
 ```{r}
 
+# Create a function to rescale linked fate related questions 
+rescale <- function(data){
+  data %>% 
+    as.character() %>%
+      recode("4" = "-2", 
+        "3" = "-1", 
+        "2" = "1", 
+        "1" = "2") %>%
+    as.factor()
+}
+
 # Rescaling and renaming variables 
 df <- df %>%
-  mutate(Q16d1 = 5 - Q16d1,
-         Q16d2 = 5 - Q16d2, 
-         Q16d3 = 5- Q16d3) %>%
+  mutate(Q16d1 = rescale(Q16d1),
+         Q16d2 = rescale(Q16d2), 
+         Q16d3 = rescale(Q16d3)) %>%
   rename("linked_fate"= "Q16d1",
          "linked_progress" = "Q16d2",
          "linked_hurt" = "Q16d3",
@@ -114,6 +125,7 @@ df$race <- df$race %>%
         "4" = "Asian", 
         "5" = "Other") %>%
   as.factor()
+
 ```
 
 ```{r}
