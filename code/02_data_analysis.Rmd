@@ -177,19 +177,10 @@ diff_fate_hurt <- df %>%
     boot.conf = ((MKinfer::boot.t.test(linked_fate, linked_hurt, R= 100)$boot.conf.int[2]) - MKinfer::boot.t.test(linked_fate, linked_hurt, R= 100)$boot.conf.int[1])/2
     )
 
-diff_progress_hurt <- df %>%
-  group_by(race) %>%
-  summarize(
-    diff = mean(linked_progress, na.rm = T) - mean(linked_hurt, na.rm = T),
-    conf = ((t.test(linked_progress, linked_hurt)$conf.int[2]) - t.test(linked_progress, linked_hurt)$conf.int[1])/2,
-    boot.conf = ((MKinfer::boot.t.test(linked_progress, linked_hurt, R= 100)$boot.conf.int[2]) - MKinfer::boot.t.test(linked_progress, linked_hurt, R= 100)$boot.conf.int[1])/2
-    )
-
 # Combining the results 
 
 diff_results <- bind_rows(mutate(diff_fate_progress, Type = "fate_progress"),
-          mutate(diff_fate_hurt, Type = "fate_hurt"),
-          mutate(diff_progress_hurt, Type = "progress_hurt"))
+          mutate(diff_fate_hurt, Type = "fate_hurt"))
 
 ```
 
