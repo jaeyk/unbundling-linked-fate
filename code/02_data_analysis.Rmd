@@ -255,7 +255,7 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
 
 kappa_plot / kappa_weight_plot / kappa_boot_plot
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png")
+ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png", height = 8)
   
 ```
 
@@ -315,7 +315,7 @@ d2 <- diff_results %>%
          title = "Difference of means test results (with Bootstrapped CIs)") +
     geom_hline(yintercept = 0, linetype = "dashed") +
     facet_wrap(~Type) 
-
+  
 d1
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png")
