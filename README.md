@@ -53,7 +53,7 @@ In the rest of the document, I state how I have **cleaned**, **analyzed**, and *
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Mean and Standard Errors
 
-In Figure 1, Y-axis indicates the average score of responses to linked fate related questions. X-axis indicates different racial groups. Mean describes the central tendency of the responses. The limitation is it does not show how these data points are spread. For that reason, I also included standard errors, which are indicated by the error bars.
+In Figure 1, X-axis indicates the average score of responses to linked fate related questions. Y-axis indicates different racial groups. Mean describes the central tendency of the responses. The limitation is it does not show how these data points are spread. For that reason, I also included standard errors, which are indicated by the error bars.
 
 To begin with, Figure 1 clearly demonstrates using different measure for linked fate yields different level of responses. Overall, the standard linked fate question drew the stronget expressed support for linked fate. Linked progress was on average scored higher than linked hurt across all racial groups including African Americans. It does not mean that Dawson's theory is wrong becuase the data also provides evidence for the presence of linked hurt. What the theory has missed is the importance of linked progress mechanism and its prevalance.
 
@@ -62,7 +62,7 @@ To begin with, Figure 1 clearly demonstrates using different measure for linked 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/density_plot.png)
 Figure 2. Descriptive analysis
 
-In Figure 2, X-axix indicates each choice used in the linked fate questions. Y-axis indicats their kernal density estimates (KDE). The smoothed line shows an estimated underlying data distribution. This more detailed look on the data reveals several interesting patterns.
+In Figure 2, X-axix indicates those multi-choices used in the linked fate questions. Y-axis indicats their kernal density estimates (KDE). The smoothed line shows an estimated underlying data distribution. This more detailed look on the data reveals several interesting patterns.
 
 The KDE pattern for the responses to the linked fate question among African American respondents is consistent with the prediction of the black utility heurisics theory. The distribution was left-skewed. It shows an almost unanimous support for the black solidarity.
 

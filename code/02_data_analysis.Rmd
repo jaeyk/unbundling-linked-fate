@@ -87,8 +87,10 @@ summary_stat <- bind_rows(mutate(fate_stat, Type = "Linked fate"),
 summary_stat %>%  
   ggplot(aes(x = fct_reorder(race, mean), y = mean, 
              ymax = mean + se, 
-             ymin = mean - se, col = Type)) +
-    geom_pointrange() +
+             ymin = mean - se, fill = Type)) +
+    geom_bar(position=position_dodge(), stat="identity") +
+    geom_errorbar(width=.2,                    # Width of the error bars
+                  position=position_dodge(.9)) +
     theme_base() +
     coord_flip() +
     geom_hline(yintercept = 0, linetype = "dashed") +
