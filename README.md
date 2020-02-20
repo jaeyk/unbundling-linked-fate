@@ -88,6 +88,8 @@ Figure 4. Correlation tests results
 
 #### Difference of means test
 
+Finally, I would like to revist Figure 1 and illustrate the consquence of using the standard linked fate question over the more specific ones more clearly. Here fate_hurt shows the mean difference between the responses of the linked hurt question and those of the standard linked fate qeustion. Similarly, fate_progress shows that the mean difference between the responses of the linked progress question and those of the standard linked fate qeustion. X-axis indicates different racial groups. Y-axis indicates difference in means. 
+
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
 Figure 5. Difference of means test results
 

@@ -269,8 +269,8 @@ diff_fate_hurt <- df %>%
 
 # Combining the results 
 
-diff_results <- bind_rows(mutate(diff_fate_progress, Type = "fate_progress"),
-          mutate(diff_fate_hurt, Type = "fate_hurt"))
+diff_results <- bind_rows(mutate(diff_fate_progress, Type = "Progress - Fate"),
+          mutate(diff_fate_hurt, Type = "Hurt - Fate"))
 
 ```
 
@@ -287,8 +287,7 @@ d1 <- diff_results %>%
     labs(x = "Race", y = "Difference in means",
          title = "Difference of means test results ") +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    facet_wrap(~Type) +
-    ylim(c(-0.3,1.2))
+    facet_wrap(~Type) 
 
 d2 <- diff_results %>%  
   ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
@@ -299,8 +298,7 @@ d2 <- diff_results %>%
     labs(x = "Race", y = "Difference in means",
          title = "Difference of means test results (with Bootstrapped CIs)") +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    facet_wrap(~Type) +
-    ylim(c(-0.3,1.2))
+    facet_wrap(~Type) 
 
 d1
 
