@@ -95,7 +95,7 @@ summary_stat %>%
     coord_flip() +
     geom_hline(yintercept = 0, linetype = "dashed") +
     labs(x = "Race", y = "Mean",
-         title = "Mean and Standard Errors") 
+         title = "Average responses by racial groups") 
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", width = 7)
 ```
