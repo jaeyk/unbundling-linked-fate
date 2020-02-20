@@ -81,29 +81,7 @@ Figure 3. Correlation tests results
 
 The other necessary step is checking reliability. Perhaps, the differences in responses of these three linked fate questions arose by chance. They are all related and wordings sound similar. Thus, this is a legitimate concern. I addressed this problem by calculating Conger's kappa. Conger's kappa is a generalized version of Cohen's kappa and shows whether the raters have a perfect agreement (=1) or their agreement is entirely a fluke (=0). This technique is often used to test the reliability of raters. Here, I use this method whether similarities in the responses of these three linked fatue questions occurred by chance.
 
-```{R}
-
-reliability_test <- function(data){
-irr <- data %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  kappam.fleiss(exact = TRUE) # Conger's kappa
-irr$value}
-
-reliability_boot_test <- function(data){
-irr <- (df %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  ckap(R = 999))
-
-kappa <- irr$est %>% as.numeric()
-ub <- irr$ub %>% as.numeric()
-lb <- irr$lb %>% as.numeric()
-
-return(c(kappa, ub, lb))
-}
-
-```
-- Conger's Kappa
-- Bootstrapped Conger's Kappa
+In Figure 4, Y-axis indicates Conger's kappa statistic and X-axis indicates different racial groups. The upper panel shows that the reliability score for whites is far lower than that of the other groups. One concern here is the number of white survey participants is far grater than that of the other groups. Because I am concerned about this imbalance in group size, I also bootstrapped kappa and also calculated confidence intervals. The lower panel shows that when we did that the difference disappeared. All kappa statistics are between 0.4 and 0.45.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/reliability_tests_plot.png)
 Figure 4. Correlation tests results
