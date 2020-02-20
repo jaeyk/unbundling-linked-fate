@@ -68,8 +68,7 @@ In Figure 2, X-axix indicates each choice used in the linked fate questions. Y-a
 
 The KDE pattern for the responses to the linked fate question among African American respondents is consistent with the prediction of the black utility heurisics theory. The distribution was left-skewed. It shows an almost unanimous support for the black solidarity.
 
-However, the same respondents became more skeptical when they were asked about the specific connection between their group and indiivdual utility. We can see similar patterns across other racial groups. In the case of whites, respondents began to disagree the idea of white group consciousness more than they agreed with it.
-
+However, the same respondents became more skeptical when they were asked about the specific connection between their group and indiivdual utility. We can see similar patterns across other racial groups. The case of whites was an extreme one. In that case, the respondents began to disagree the idea of white group consciousness more than they agreed with it when they were presented with more specific statements.
 
 #### Correlation tests
 
