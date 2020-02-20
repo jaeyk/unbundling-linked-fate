@@ -304,7 +304,7 @@ d2 <- diff_results %>%
 
 d1
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png", width = 10, height = 8)
+ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png")
 
 ```
 
