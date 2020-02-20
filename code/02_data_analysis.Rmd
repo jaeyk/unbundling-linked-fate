@@ -90,11 +90,12 @@ summary_stat %>%
              ymin = mean - se, col = Type)) +
     geom_pointrange() +
     theme_base() +
+    coord_flip() +
     geom_hline(yintercept = 0, linetype = "dashed") +
     labs(x = "Race", y = "Mean",
          title = "Mean and Standard Errors") 
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", height = 5)
+ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", width = 7)
 ```
 
   
