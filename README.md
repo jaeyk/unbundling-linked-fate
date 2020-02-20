@@ -32,7 +32,7 @@ Our main hypotheses were as follows:
 
 ### Data collection
 
-We tested this hypothesis by embedding the above three questions in a California-wide survey (n = 4,435), carried out by the Institute of Government Studies at the University of California Berkeley in June 2019. Other mechanisms were added to reduce bias and collect more representative data:
+We tested this hypothesis by embedding the above three questions in a California-wide survey (n = 4,435), carried out by the Institute of Government Studies at the University of California Berkeley in June 2019.
 
 - Random sampling: Random sampling was used based on publicly available email addresses in voter records as a sampling frame (see this [link](https://www.latimes.com/politics/la-na-pol-2020-how-poll-was-done-20190613-story.html) for more information on their sampling methods and this [link](https://sda.berkeley.edu/sdaweb/docs/IGS_2019_02/DOC/hcbkfx0.htm) for list of items used in the survey).
 - Random ordering: These questions were randomly ordered to accout for order bias.
