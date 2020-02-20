@@ -92,7 +92,7 @@ summary_stat %>%
     theme_base() +
     geom_hline(yintercept = 0, linetype = "dashed") +
     labs(x = "Race", y = "Mean",
-         title = "Descriptive analysis") 
+         title = "Mean and Standard Errors") 
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", height = 5)
 ```
@@ -238,8 +238,8 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
 
 kappa_plot / kappa_boot_plot
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png")
-
+  ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png")
+  
 ```
 
 ### 5. Difference-in-means analysis 
