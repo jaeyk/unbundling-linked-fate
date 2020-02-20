@@ -249,7 +249,7 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
            lb = c(r1[3], r2[3], r3[3], r4[3]),
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa, ymax = ub, ymin = lb)) +
-  geom_pointrange() + theme_base() + labs(title = "Reliability test (with Bootstrapping)", 
+  geom_pointrange() + theme_base() + labs(title = "Reliability test (with bootstrapping)", 
                                           y = "Conger's Kappa") +
   ylim(c(0.3, 0.5))
 
