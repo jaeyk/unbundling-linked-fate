@@ -88,10 +88,13 @@ Figure 4. Correlation tests results
 
 #### Difference of means test
 
-Finally, I would like to revist Figure 1 and illustrate the consquence of using the standard linked fate question over the more specific ones more clearly. Here fate_hurt shows the mean difference between the responses of the linked hurt question and those of the standard linked fate qeustion. Similarly, fate_progress shows that the mean difference between the responses of the linked progress question and those of the standard linked fate qeustion. X-axis indicates different racial groups. Y-axis indicates difference in means. 
+Finally, I would like to revist Figure 1 and stress the extent to which using the standard linked fate question creates more positive responses compared to the more specific questions do. Here, the left panel (Hurt - Fate) shows the mean difference between the responses of the linked hurt question and those of the standard linked fate qeustion. Similarly, the right panel (Progress - Fate) shows that the mean difference between the responses of the linked progress question and those of the standard linked fate qeustion. X-axis indicates different racial groups. Y-axis indicates difference in means. In both cases, it is clear that using specific questions decreases the ratio of positive responses. The decreasing rate is more severe in the case of the linked hurt than that of the linked hurt question. In that regards, white respondents showed the most extreme tendency.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
 Figure 5. Difference of means test results
 
+#### Concluding remarks
 
-## Conclusion remarks
+1. Why was the standard linked question able to create the most positive responses? One possibiilty was because the wording is vague and general. Thus, it left room for respondents to interpret in whatever way they prefer.
+2. Our study suggested two possible interpretations of the linked fate question and showed both supportive and not supportive evidence for the black utility heuristics theory. The negative mechanism is present but the positive mechanism is prevailing even including African Americans.
+3. Directly applying the standard linked fate quedstion to whites should take cautions. The survey results show that whites clearly interpret and react to the idea of group consciousness differently compared to other racial groups.
