@@ -72,10 +72,7 @@ However, the same respondents became more skeptical when they were asked about t
 
 #### Correlation tests
 
--   Pearson
--   Bootstrapped Pearson
--   Kendall
--   Spearman
+As the next step, I examine the correlation between the standard and nobel linked fate measures. Again, the theory predicts that the responses of the standard linked fate measure should covary with the responses of the linked hurt mesaure than those of the linked progress measure. This hypothesis is not correct across all racial groups except whites where the correlation coeffecients between these two relationsips are quite close. I calculated correlation coefficients using four different methods as they make slightly different assumptions about the distribution of data points. Pearson correlation coefficients tend to show the highest numbers. Using bootstrapping makes almost no difference. Spearman and Kendall correlation coefficietns provide smalelr coefficients. 
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/cor_coeffs_plot.png)
 Figure 3. Correlation tests results
