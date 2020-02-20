@@ -192,13 +192,19 @@ ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
   reliability_test <- function(data){
   irr <- data %>%
     dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-    kappam.fleiss(exact = TRUE) # Conger's kappa
-  irr$value}
+    ckap(R = 0) # Conger's kappa, No bootstrapping 
+  irr$est %>% as.numeric()}
+
+  reliability_weight_test <- function(data){
+  irr <- data %>%
+    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+    ckap(R = 0, weight = "quadratic") # Conger's kappa, linear weighting 
+  irr$est %>% as.numeric()}
   
   reliability_boot_test <- function(data){
   irr <- (df %>%
     dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-    ckap(R = 999))
+    ckap(R = 999)) # With bootstrapping 
   
   kappa <- irr$est %>% as.numeric()
   ub <- irr$ub %>% as.numeric()
@@ -221,6 +227,16 @@ kappa_plot <- data.frame(Kappa = c(reliability_test(df %>% filter(race == "Asian
                                           y = "Conger's Kappa") +
   ylim(c(0.3, 0.5))
 
+kappa_weight_plot <- data.frame(Kappa = c(reliability_weight_test(df %>% filter(race == "Asians")), 
+                     reliability_weight_test(df %>% filter(race == "Latinx")), 
+                     reliability_weight_test(df %>% filter(race == "Whites")), 
+                     reliability_weight_test(df %>% filter(race == "Blacks"))),
+           Race = c("Asians","Latinx","Whites","Blacks")) %>%
+  ggplot(aes(x = Race, y = Kappa)) +
+  geom_point() + theme_base() + labs(title = "Reliability test (with quadratic weighting)", 
+                                          y = "Conger's Kappa") +
+  ylim(c(0.3, 0.5))
+
 ## With bootstrapping 
 
 r1 <- reliability_boot_test(df %>% filter(race == "Asians"))
@@ -237,9 +253,9 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
                                           y = "Conger's Kappa") +
   ylim(c(0.3, 0.5))
 
-kappa_plot / kappa_boot_plot
+kappa_plot / kappa_weight_plot / kappa_boot_plot
 
-  ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png")
+ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png")
   
 ```
 

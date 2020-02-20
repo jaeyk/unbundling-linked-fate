@@ -4,47 +4,49 @@
 
 ## Overview
 
-This project investigates how people interpret linked fate, a major measure of group consciousness in identity politics. Dawson's [Behind the Mule](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false) (1994) argues that African Americans remain a cohesive racial group despite the growing within-group economic inequality because the centuries-long experience of racial discrimination ties their individual and group utility together. He called this connection "linked fate" and since then linked fate has become a popular measure of group solidarity across diverse group contexts (Google Scholar search yields [more than 2700 results](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22linked+fate%22&btnG=)).In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I argue the linked fate literature has a measure problem. Scholars have measured the expressed strength of linked fate by asking survey respondents to what extent they agree what happens to their group also influences their life. The issue is people may think about that connection in two different ways: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which indicates that an individual thinks that they make progress when their group makes progress. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt when their group gets hurt. According to the black utility heuristics theory, the linked hurt interpretation is more plausible. But how do we know?
+This project investigates how people interpret linked fate, a major measure of group consciousness in identity politics. Dawson's [*Behind the Mule*](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false) (1994) argues that African Americans remain a cohesive racial group despite the growing within-group economic inequality, because the centuries-long experience of racial discrimination ties their individual and group utility together. He called this connection "linked fate", and since then, linked fate has become a popular measure of group solidarity across diverse group contexts (a Google Scholar search yields [more than 2700 results](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22linked+fate%22&btnG=)).
 
-Using a California-wide survey data (N = 4,435) and novel measures of linked fate, we demonstrate how distinguishing these interpretations matter for the empirical study of identity politics.
+In this project, [Alan Yan](https://politics.princeton.edu/people/alan-yan) and I argue the linked fate literature has a measure problem. Scholars have measured the expressed strength of linked fate by asking survey respondents to what extent they agree that what happens to their group also influences their life. The issue is people may think about that connection in two different ways: **linked progress** and **linked hurt**. Linked progress is a positive mechanism which suggests that an individual thinks they progress when their group progresses. Linked hurt is a negative mechanism which indicates that an individual thinks that they get hurt when their group gets hurt. According to Dawson's black utility heuristics theory, the linked hurt interpretation is more plausible because discrimination is the driving force. But how do we know?
 
-1. Linked progress was on average scored higher than linked hurt across all racial groups including African Americans. This finding was inconsistent with what Dawson's original theory implied.
-2. People expressed stronger group consciousness when they were asked about it through the standard linked fate question. White group consciousness disappeared when we used more specific linked fate questions. This finding raises a question about the foundations of how white group politics are different from that of other racial groups.
+Using a California-wide survey data (N = 4,435) and novel measures of linked fate, we demonstrated how distinguishing these interpretations matter for the empirical study of identity politics.
+
+1. Linked progress, on average, scored higher than linked hurt across all racial groups, including African Americans. This finding was inconsistent with Dawson's original theory.
+2. People expressed stronger group consciousness when they were asked about it through the standard linked fate question. White group consciousness disappeared when we used more specific linked fate questions. This finding raised a question about the foundation of how white group politics are different from those of other racial groups.
 
 ## Research design
 
 ### Hypothesis
 
-The standard way of measuring linked fate is asking the following question to the survey participants.
+The standard way of measuring linked fate is to ask the following question to the survey participants:
 
-- **Linked fate**: Do you agree or disagree - What happens to (Latinos/ whites/ blacks and African Americans / Asians/ Pacific Islanders/ American Indians) in this country will have something to do with what happens in my life
+- **Linked fate**: Do you agree or disagree? What happens to (Latinos/whites/blacks and African Americans/Asians/Pacific Islanders/American Indians) in this country will have something to do with what happens in my life.
 
-In addition to this standard measure, we added two novel measures of linked fate that distinguish whether linked fate is interpreted in the context of a positive or a negative connection between group and individual utility.
+In addition to using this standard measure, we added two novel measures of linked fate that determine whether linked fate is interpreted in the context of a positive or a negative relationship between group and individual utility.
 
-- **Linked progress**: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
-- **Linked hurt**: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
+- **Linked progress**: Do you agree or disagree? When things get better for (Latinos/whites/blacks and African Americans/Asians/Pacific Islanders/American Indians) in this country, then things will get better for me.
+- **Linked hurt**: Do you agree or disagree? When things get worse for (Latinos/whites/blacks and African Americans/Asians/Pacific Islanders/ American Indians) in this country, then things will get worse for me.
 
-Our main hypotheses are as follows:
+Our main hypotheses were as follows:
 1. Linked fate, linked progress, and linked hurt will yield statistically different levels of responses.
-2. If the measure is consistent with Dawson's theory, linked hurt will be more strongly correlated with linked hurt than linked progress responses especially among African Americans (convergent validity).
+2. If the measure is consistent with Dawson's theory, linked hurt will be more strongly correlated with linked hurt than linked progress responses, especially among African Americans (convergent validity).
 
 ### Data collection
 
-We tested this hypothesis by embedding these three questions in a California-wide survey (N = 4,435) carried out by the Institute of Government Studies at the University of California Berkeley in June 2019.
+We tested this hypothesis by embedding the above three questions in a California-wide survey (n = 4,435), carried out by the Institute of Government Studies at the University of California Berkeley in June 2019. Other mechanisms were added to reduce bias and collect more representative data:
 
 - Random sampling: Random sampling was used based on publicly available email addresses in voter records as a sampling frame (see this [link](https://www.latimes.com/politics/la-na-pol-2020-how-poll-was-done-20190613-story.html) for more information on their sampling methods and this [link](https://sda.berkeley.edu/sdaweb/docs/IGS_2019_02/DOC/hcbkfx0.htm) for list of items used in the survey).
-- Random ordering: These questions were randomly ordered to get around the order effect.
-- Multiple choices: The responses for these questions were collected using four multiple choices (1 - Agree strongly, 2 - Agree somewhat, 3 - Disagree somewhat, 4 - Disagree strongly).
+- Random ordering: These questions were randomly ordered to accout for order bias.
+- Multiple choices: The responses to these questions were collected using four multiple choices (1 - Agree strongly, 2 - Agree somewhat, 3 - Disagree somewhat, 4 - Disagree strongly).
 
 ## Workflow
 
-In the rest of the document, I state how I have **cleaned**, **analyzed**, and **visualized** data. I shared the R code I used in each step.
+In the rest of the document, I describe how I have **cleaned**, **analyzed**, and **visualized** data. I have shared the R code I used in each step.
 
 ### Data cleaning \[[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/01_data_cleaning.Rmd)]
 
-- Recoded linked fate related questions so that all positive responses become positive numbers (2- agree strongly, 1- agree somewhat) and all negative responses become negative numbers (-1 - disagree somewhat, - 2 disagree strongly). I did so because this scale was easier for me to interpret the results.
-- Found 5-6% of missing responses from linked fate questions and imputed them using multiple imputations (the `mice` package in R).
-- Only included participants whose ethnicity was identified either as whites, African Americans, Latinx, and Asian Americans. Consequently, I dropped 150 participants (3% of the total number of participants) who were non-identified using these measures.
+- I recoded linked fate-related questions so that all positive responses became positive numbers (2 was agree strongly, 1 was agree somewhat), and all negative responses became negative numbers (-1 was disagree somewhat, - 2 was disagree strongly). This scale made it easier to interpret the results.
+- I identified missing responses from linked fate questions, which represented 5–6% of the responses, and inputted them using multiple additions (the `mice` package in R).
+- I only included participants who identified as white, African American, Latinx, and Asian American. Consequently, I dropped 150 participants (3% of the total number of participants) who were non-identified using these measures.
 
 ### Data analysis and visualization \[[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/02_data_analysis.Rmd)]
 
@@ -53,48 +55,48 @@ In the rest of the document, I state how I have **cleaned**, **analyzed**, and *
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Mean and Standard Errors
 
-In Figure 1, X-axis indicates the average score of responses to linked fate related questions. Y-axis indicates different racial groups. Mean describes the central tendency of the responses. The limitation is it does not show how these data points are spread. For that reason, I also included standard errors, which are indicated by the error bars.
+In Figure 1, the x-axis indicates the average score of responses to linked fate-related questions. The y-axis charts different racial groups. The mean describes the central tendency of the responses. The limitation is that it does not show how these data points are spread. For that reason, I also included the standard errors, which are indicated by the error bars.
 
-To begin with, Figure 1 clearly demonstrates using a different measure for linked fate yields a different level of responses. Overall, the standard linked fate question drew the strongest expressed support for linked fate. Linked progress was on average scored higher than linked hurt across all racial groups including African Americans. It does not mean that Dawson's theory is wrong because the data also provides evidence for the presence of linked hurt. What the theory has missed is the importance of linked progress mechanism and its prevalence.
+Figure 1 clearly demonstrates how the use of a different measure for linked fate yields a different level of response. Overall, the standard linked fate question drew the strongest expressed support for linked fate. On average, linked progress scored higher than linked hurt across all racial groups, including African Americans. These results do not necessarily mean that Dawson's theory is wrong because the data also provides evidence for the presence of linked hurt. However, the theory has failed to include the importance of linked progress mechanisms and its prevalence.
 
 #### Density plots
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/density_plot.png)
 Figure 2. Descriptive analysis
 
-In Figure 2, X-axis indicates those multi-choices used in the linked fate questions. Y-axis indicates their kernel density estimates (KDE). The smoothed line shows an estimated underlying data distribution. This more detailed look at the data reveals several interesting patterns.
+In Figure 2, the x-axis indicates the multi-choices offered in the linked fate questions. The y-axis plots the variable’s kernel density estimations (KDE). The smooth line depicts the estimated underlying data distribution. This more detailed look at the data reveals several interesting patterns.
 
-The KDE pattern for the responses to the linked fate question among African American respondents is consistent with the prediction of the black utility heuristics theory. The distribution was left-skewed. It shows almost unanimous support for the black solidarity.
+The KDE pattern for the responses to the linked fate questions among African American respondents is consistent with the prediction of the black utility heuristics theory. The distribution is skewed left. It shows almost unanimous support for black solidarity.
 
-However, the same respondents became more skeptical when they were asked about the specific connection between their group and individual utility. We can see similar patterns across other racial groups. The case of whites was an extreme one. In that case, the respondents began to disagree with the idea of white group consciousness more than they agreed with it.
+However, the same respondents became more skeptical when they were asked about the specific connection between their group and individual utility. We can see similar patterns across other racial groups, with white respondents’ answers representing an extreme example. In that case, the respondents began to disagree with the idea of white group consciousness more than they agreed with it.
 
 #### Correlation tests
 
-As the next step, I examine the correlation between the standard and nobel linked fate measures. The theory predicts that the responses of the standard linked fate measure should covary more closely with the responses of the linked hurt measure than those of the linked progress measure. This hypothesis is not correct across all racial groups except whites where the correlation coefficients between these two relationships are quite close.
+As the next step, I examined the correlation between the standard and nobel linked fate measures. The theory predicts that the responses of the standard linked fate measure should covary more closely with the responses of the linked hurt measure than with those of the linked progress measure. This hypothesis was not true across all racial groups except whites, where the correlation coefficients between these two relationships were quite close.
 
-I calculated correlation coefficients using four different methods as these methods make slightly different assumptions about the distribution of data points. The differences between them provide some additional insights into the data. Pearson correlation coefficients assume that the two variables being measured have a linear relationship. These coefficients show the highest numbers. Using bootstrapping makes almost no difference. Spearman and Kendall correlation coefficients are non-parametric, specifically rank-based measures. These measures provide smaller coefficients. These numbers tell us that the relationship between the two variables is not strictly monotonic. This is a pattern we already observed in Figure 2.
+I calculated the correlation coefficients using four different methods, as these methods made slightly different assumptions about the distribution of data points. The differences between them provided some additional insights into the data. The Pearson correlation coefficients assume that the two variables being measured have a linear relationship. These coefficients showed the highest numbers. The use of bootstrapping made almost no difference. The Spearman and Kendall correlation coefficients are non-parametric, specifically rank-based measures. These measures provide smaller coefficients. These numbers told us that the relationship between the two variables was not strictly monotonic. This was a pattern we had already observed in Figure 2.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/cor_coeffs_plot.png)
 Figure 3. Correlation tests results
 
 #### Reliability tests
 
-The other necessary step is checking reliability. Perhaps, the differences in responses of these three linked fate questions arose by chance. They are all related and wordings sound similar. Thus, this is a legitimate concern. I addressed this problem by calculating Conger's kappa. Conger's kappa is a generalized version of Cohen's kappa and shows whether the raters have a perfect agreement (=1) or their agreement is entirely a fluke (=0). This technique is often used to test the reliability of raters. Here, I use this method whether similarities in the responses of these three linked fate questions occurred by chance.
+The other necessary step was checking reliability. Perhaps, the differences in responses in these three linked fate questions arose by chance. The questions were all related and their wording was similar. Thus, this was a legitimate concern. I addressed this problem by calculating Conger's kappa. Conger's kappa is a generalized version of Cohen's kappa and shows whether the raters have a perfect agreement (=1) or if their agreement is entirely a fluke (=0). This technique is often used to test the reliability of raters. Here, I employed this method to determine whether similarities in the responses of these three linked fate questions occurred by chance.
 
-In Figure 4, Y-axis indicates Conger's kappa statistic and X-axis indicates different racial groups. The upper panel shows that the reliability score for whites is far lower than that of the other groups. One concern here is the number of white survey participants is far greater than that of the other groups. Because I am concerned about this imbalance in group size, I also bootstrapped kappa and also calculated confidence intervals. The lower panel shows that when we did that the difference disappeared. All kappa statistics are between 0.4 and 0.45.
+In Figure 4, the y-axis indicates Conger's kappa statistic, and the x-axis plots different racial groups. The top panel shows that the reliability score for whites is far lower than that of other groups. The middle panel shows that weighting makes no difference. One concern was that the number of white survey participants was far greater than that of other groups. To account for this imbalance in group size, I also bootstrapped kappa and calculated the confidence intervals. The bottom panel shows that the difference disappears after carrying out these additional calculations. All kappa statistics are between 0.4 and 0.45.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/reliability_tests_plot.png)
 Figure 4. Correlation tests results
 
 #### Difference of means test
 
-Finally, I would like to revisit Figure 1 and stress the extent to which using the standard linked fate question creates more positive responses compared to the more specific questions do. Here, the left panel (Hurt - Fate) shows the mean difference between the responses of the linked hurt question and those of the standard linked fate question. Similarly, the right panel (Progress - Fate) shows that the mean difference between the responses of the linked progress question and those of the standard linked fate question. The X-axis indicates different racial groups. Y-axis indicates the difference in means. In both cases, it is clear that using specific questions decreases the ratio of positive responses. The decreasing rate is more severe in the case of the linked hurt than that of the linked hurt question. In that regard, white respondents showed the most extreme tendency.
+Finally, I would like to revisit Figure 1 and stress the extent to which using the standard linked fate question creates more positive responses compared to the more specific question. Here, the left panel (Hurt - Fate) shows the mean difference between the responses of the linked hurt question and those of the standard linked fate question. Similarly, the right panel (Progress - Fate) displays the mean difference between the responses of the linked progress question and those of the standard linked fate question. The x-axis charts different racial groups. The y-axis indicates the difference in means. In both cases, it is clear that using a specific question decreases the ratio of positive responses. The ratio decreases faster in the case of the linked hurt than that of the linked hurt question. In that regard, white respondents showed the most extreme tendency.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
 Figure 5. The difference in means test results
 
 #### Concluding remarks
 
-1. Why was the standard linked questionable to create the most positive responses? One possibility was because the wording is vague and general. Thus, it left room for respondents to interpret in whatever way they prefer.
-2. Our study suggested two possible interpretations of the linked fate question and showed both supportive and not supportive evidence for the black utility heuristics theory. The negative mechanism is present but the positive mechanism is prevailing even including African Americans.
-3. Directly applying the standard linked fate question to whites should take caution. The survey results show that whites clearly interpret and react to the idea of group consciousness differently compared to other racial groups.
+1. Why was the standard linked question able to generate the most positive responses? One possibility was because the wording was vague and general. Thus, it left room for respondents to interpret the question in whatever way they preferred.
+2. Our study suggested two possible interpretations of the linked fate question and showed both supportive and not supportive evidence for the black utility heuristics theory. The negative mechanism was present, but the positive mechanism was prevailing, even for African Americans.
+3. Researchers should use caution when directly applying the standard linked fate question to whites. The survey results showed that whites clearly interpreted and reacted to the idea of group consciousness differently compared to other racial groups.
