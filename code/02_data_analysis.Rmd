@@ -172,13 +172,11 @@ cor_results <- cor_results %>%
 cor_results %>%
   mutate(coeffs = round(coeffs, 4)) %>% 
   ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
-  geom_col(position = "stack") +
-  geom_text(aes(label = coeffs),
-              position = position_stack(vjust = .5)) +
+  geom_col(position = "dodge") +
   facet_wrap(~race) +
   coord_flip() + 
   theme_base() +
-  labs(x = "Race", y = "Stacked correlation coefficients", 
+  labs(x = "Race", y = "Correlation coefficients", 
        title = "Correlation test resuts")
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
