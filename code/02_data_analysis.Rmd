@@ -188,24 +188,24 @@ ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
 ```{r}
 
 # Create a function
-
-reliability_test <- function(data){
-irr <- data %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  kappam.fleiss(exact = TRUE) # Conger's kappa
-irr$value}
-
-reliability_boot_test <- function(data){
-irr <- (df %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  ckap(R = 999))
-
-kappa <- irr$est %>% as.numeric()
-ub <- irr$ub %>% as.numeric()
-lb <- irr$lb %>% as.numeric()
-
-return(c(kappa, ub, lb))
-}
+  
+  reliability_test <- function(data){
+  irr <- data %>%
+    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+    kappam.fleiss(exact = TRUE) # Conger's kappa
+  irr$value}
+  
+  reliability_boot_test <- function(data){
+  irr <- (df %>%
+    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+    ckap(R = 999))
+  
+  kappa <- irr$est %>% as.numeric()
+  ub <- irr$ub %>% as.numeric()
+  lb <- irr$lb %>% as.numeric()
+  
+  return(c(kappa, ub, lb))
+  }
 
 # Reliability tests 
 
@@ -279,9 +279,9 @@ diff_results <- bind_rows(mutate(diff_fate_progress, Type = "fate_progress"),
 ```{r}
 
 d1 <- diff_results %>%  
-  ggplot(aes(x = fct_reorder(race, diff), y = diff, 
-             ymax = diff + conf, 
-             ymin = diff - conf)) +
+  ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
+             ymax = -diff + conf, 
+             ymin = -diff - conf)) +
     geom_pointrange() +
     theme_base() +
     labs(x = "Race", y = "Difference in means",
@@ -291,9 +291,9 @@ d1 <- diff_results %>%
     ylim(c(-0.3,1.2))
 
 d2 <- diff_results %>%  
-  ggplot(aes(x = fct_reorder(race, diff), y = diff, 
-             ymax = diff + boot.conf, 
-             ymin = diff - boot.conf)) +
+  ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
+             ymax = -diff + boot.conf, 
+             ymin = -diff - boot.conf)) +
     geom_pointrange() +
     theme_base() +
     labs(x = "Race", y = "Difference in means",
