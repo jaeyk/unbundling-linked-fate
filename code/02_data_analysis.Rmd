@@ -302,7 +302,7 @@ d2 <- diff_results %>%
     facet_wrap(~Type) +
     ylim(c(-0.3,1.2))
 
-d1 / d2
+d1
 
 ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png", width = 10, height = 8)
 
