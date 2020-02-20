@@ -70,7 +70,7 @@ However, the same respondents became more skeptical when they were asked about t
 
 #### Correlation tests
 
-As the next step, I examine the correlation between the standard and nobel linked fate measures. Again, the theory predicts that the responses of the standard linked fate measure should covary with the responses of the linked hurt mesaure than those of the linked progress measure. This hypothesis is not correct across all racial groups except whites where the correlation coeffecients between these two relationsips are quite close.
+As the next step, I examine the correlation between the standard and nobel linked fate measures. The theory predicts that the responses of the standard linked fate measure should covary more closely with the responses of the linked hurt mesaure than those of the linked progress measure. This hypothesis is not correct across all racial groups except whites where the correlation coeffecients between these two relationsips are quite close.
 
 I calculated correlation coefficients using four different methods as these methods make slightly different assumptions about the distribution of data points. The differences between them provide some additional insights into the data. Pearson correlation coefficients assume that the two variables being measured have a linear relationship. These coefficients show the highest numbers. Using bootstrapping makes almost no difference. Spearman and Kendall correlation coefficietns are non-parametric, specifically rank-based measures. These measures provide smaller coefficients. Theses numbers tell us that the relationship between the two variabls is not strictly monotonic. This is a pattern we already observed from Figure 2.
 
@@ -79,6 +79,29 @@ Figure 3. Correlation tests results
 
 #### Reliability tests
 
+The other necessary step is checking reliability. Perhaps, the differences in responses of these three linked fate questions arose by chance. They are all related and wordings sound similar. Thus, this is a legitimate concern. I addressed this problem by calculating Conger's kappa. Conger's kappa is a generalized version of Cohen's kappa and shows whether the raters have a perfect agreement (=1) or their agreement is entirely a fluke (=0). This technique is often used to test the reliability of raters. Here, I use this method whether similarities in the responses of these three linked fatue questions occurred by chance.
+
+```{R}
+
+reliability_test <- function(data){
+irr <- data %>%
+  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+  kappam.fleiss(exact = TRUE) # Conger's kappa
+irr$value}
+
+reliability_boot_test <- function(data){
+irr <- (df %>%
+  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+  ckap(R = 999))
+
+kappa <- irr$est %>% as.numeric()
+ub <- irr$ub %>% as.numeric()
+lb <- irr$lb %>% as.numeric()
+
+return(c(kappa, ub, lb))
+}
+
+```
 - Conger's Kappa
 - Bootstrapped Conger's Kappa
 
