@@ -36,10 +36,7 @@ pacman::p_load(
         rel # for bootstrapping kappa
 )
 
-
-source("/home/jae/validating-two-linked-fates/functions/theme_publications.r")
-
-theme_set(theme_Publication(14))
+theme_set(theme_base())
 
 ```
 
@@ -92,17 +89,15 @@ summary_stat <- bind_rows(mutate(fate_stat, Type = "Linked fate"),
 summary_stat %>%  
   ggplot(aes(x = fct_reorder(race, mean), y = mean, 
              ymax = mean + se, 
-             ymin = mean - se, fill = Type)) +
-    geom_bar(position=position_dodge(), stat="identity") +
-    geom_errorbar(width=.2,                    # Width of the error bars
-                  position=position_dodge(.9)) +
-    
+             ymin = mean - se, col = Type)) +
+    geom_pointrange() +
     coord_flip() +
+    theme_base() +
     geom_hline(yintercept = 0, linetype = "dashed") +
     labs(x = "Race", y = "Mean",
          title = "Average responses by racial groups") 
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png", width = 7)
+ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png")
 ```
 
   
