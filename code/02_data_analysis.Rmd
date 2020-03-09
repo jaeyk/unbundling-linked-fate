@@ -13,7 +13,7 @@ html_document:
 
 # Clean up the environment
 
-# rm(list = ls())
+rm(list = ls())
 
 # Import libraries (adapted from this link: https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them)
 
@@ -189,43 +189,45 @@ ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
 
 # Create a function
   
-  reliability_test <- function(data){
-  irr <- data %>%
-    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-    ckap(R = 0) # Conger's kappa, No bootstrapping 
-  irr$est %>% as.numeric()}
+reliability_test <- function(data){
 
-  reliability_weight_test <- function(data){
-  irr <- data %>%
-    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-    ckap(R = 0, weight = "quadratic") # Conger's kappa, linear weighting 
-  irr$est %>% as.numeric()}
+irr <- data %>%
+  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+  ckap(R = 0) # Conger's kappa, No bootstrapping 
+irr$est %>% as.numeric()}
+
+reliability_weight_test <- function(data){
+irr <- data %>%
+  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+  ckap(R = 0, weight = "quadratic") # Conger's kappa, linear weighting 
+irr$est %>% as.numeric()}
   
-  reliability_boot_test <- function(data){
-  irr <- (df %>%
-    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-    ckap(R = 999)) # With bootstrapping 
+reliability_boot_test <- function(data){
+irr <- (df %>%
+  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+  ckap(R = 999)) # With bootstrapping 
   
-  kappa <- irr$est %>% as.numeric()
-  ub <- irr$ub %>% as.numeric()
-  lb <- irr$lb %>% as.numeric()
-  
-  return(c(kappa, ub, lb))
-  }
+kappa <- irr$est %>% as.numeric()
+ub <- irr$ub %>% as.numeric()
+lb <- irr$lb %>% as.numeric()
+
+return(c(kappa, ub, lb))
+}
 
 # Reliability tests 
 
 ## No bootstrapping 
 
-kappa_plot <- data.frame(Kappa = c(reliability_test(df %>% filter(race == "Asians")), 
+kappa_plot <- 
+  
+data.frame(Kappa = c(reliability_test(df %>% filter(race == "Asians")), 
                      reliability_test(df %>% filter(race == "Latinx")), 
                      reliability_test(df %>% filter(race == "Whites")), 
                      reliability_test(df %>% filter(race == "Blacks"))),
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa)) +
   geom_point() +  labs(title = "Reliability test", 
-                                          y = "Conger's Kappa") +
-  ylim(c(0.3, 0.5))
+                                          y = "Conger's Kappa") 
 
 kappa_weight_plot <- data.frame(Kappa = c(reliability_weight_test(df %>% filter(race == "Asians")), 
                      reliability_weight_test(df %>% filter(race == "Latinx")), 
@@ -234,8 +236,7 @@ kappa_weight_plot <- data.frame(Kappa = c(reliability_weight_test(df %>% filter(
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa)) +
   geom_point() +  labs(title = "Reliability test (with quadratic weighting)", 
-                                          y = "Conger's Kappa") +
-  ylim(c(0.3, 0.5))
+                                          y = "Conger's Kappa") 
 
 ## With bootstrapping 
 
@@ -250,8 +251,7 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa, ymax = ub, ymin = lb)) +
   geom_pointrange() +  labs(title = "Reliability test (with bootstrapping)", 
-                                          y = "Conger's Kappa") +
-  ylim(c(0.3, 0.5))
+                                          y = "Conger's Kappa") 
 
 kappa_plot / kappa_weight_plot / kappa_boot_plot
 
