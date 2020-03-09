@@ -36,6 +36,11 @@ pacman::p_load(
         rel # for bootstrapping kappa
 )
 
+
+source("/home/jae/validating-two-linked-fates/functions/theme_publications.r")
+
+theme_set(theme_Publication(14))
+
 ```
 
 ### 1. Importing data 
@@ -91,7 +96,7 @@ summary_stat %>%
     geom_bar(position=position_dodge(), stat="identity") +
     geom_errorbar(width=.2,                    # Width of the error bars
                   position=position_dodge(.9)) +
-    theme_base() +
+    
     coord_flip() +
     geom_hline(yintercept = 0, linetype = "dashed") +
     labs(x = "Race", y = "Mean",
@@ -121,7 +126,7 @@ table(df$race)
 # Create a custom plot 
 corr_plot <- function(data){data %>%
   gather(Measures, Responses, linked_fate, linked_progress, linked_hurt) %>%
-  ggplot(aes(x = Responses)) + geom_density() + theme_base() + labs(y = "Density") + facet_wrap(~Measures)}
+  ggplot(aes(x = Responses)) + geom_density() +  labs(y = "Density") + facet_wrap(~Measures)}
 
 # Apply to each data and bind htem 
 p1 <- corr_plot(df %>% filter(race == "Asians")) + ggtitle("Asian Americans")
@@ -175,7 +180,7 @@ cor_results %>%
   geom_col(position = "dodge") +
   facet_wrap(~race) +
   coord_flip() + 
-  theme_base() +
+  
   labs(x = "Race", y = "Correlation coefficients", 
        title = "Correlation test resuts")
 
@@ -223,7 +228,7 @@ kappa_plot <- data.frame(Kappa = c(reliability_test(df %>% filter(race == "Asian
                      reliability_test(df %>% filter(race == "Blacks"))),
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa)) +
-  geom_point() + theme_base() + labs(title = "Reliability test", 
+  geom_point() +  labs(title = "Reliability test", 
                                           y = "Conger's Kappa") +
   ylim(c(0.3, 0.5))
 
@@ -233,7 +238,7 @@ kappa_weight_plot <- data.frame(Kappa = c(reliability_weight_test(df %>% filter(
                      reliability_weight_test(df %>% filter(race == "Blacks"))),
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa)) +
-  geom_point() + theme_base() + labs(title = "Reliability test (with quadratic weighting)", 
+  geom_point() +  labs(title = "Reliability test (with quadratic weighting)", 
                                           y = "Conger's Kappa") +
   ylim(c(0.3, 0.5))
 
@@ -249,7 +254,7 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
            lb = c(r1[3], r2[3], r3[3], r4[3]),
            Race = c("Asians","Latinx","Whites","Blacks")) %>%
   ggplot(aes(x = Race, y = Kappa, ymax = ub, ymin = lb)) +
-  geom_pointrange() + theme_base() + labs(title = "Reliability test (with bootstrapping)", 
+  geom_pointrange() +  labs(title = "Reliability test (with bootstrapping)", 
                                           y = "Conger's Kappa") +
   ylim(c(0.3, 0.5))
 
@@ -299,7 +304,7 @@ d1 <- diff_results %>%
              ymax = -diff + conf, 
              ymin = -diff - conf)) +
     geom_pointrange() +
-    theme_base() +
+    
     labs(x = "Race", y = "Difference in means",
          title = "Difference of means test results ") +
     geom_hline(yintercept = 0, linetype = "dashed") +
@@ -310,7 +315,7 @@ d2 <- diff_results %>%
              ymax = -diff + boot.conf, 
              ymin = -diff - boot.conf)) +
     geom_pointrange() +
-    theme_base() +
+    
     labs(x = "Race", y = "Difference in means",
          title = "Difference of means test results (with Bootstrapped CIs)") +
     geom_hline(yintercept = 0, linetype = "dashed") +
