@@ -66,17 +66,54 @@ reliability_weight_test <- function(data){
         as.numeric()
 }
 
-reliability_boot_test <- function(data){
+reliability_boot_mean <- function(data){
   
     irr <- df %>%
-        dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+        dplyr::select(linked_fate, 
+                      linked_progress, 
+                      linked_hurt) %>%
         ckap(R = 1000) # With bootstrapping 
-  
-    kappa <- irr$est %>% as.numeric()
-    ub <- irr$ub %>% as.numeric()
-    lb <- irr$lb %>% as.numeric()
-  
-    c(kappa, ub, lb)
 
+    irr$est %>% as.numeric()
+
+}
+
+reliability_boot_ub <- function(data){
+  
+    irr <- df %>%
+        dplyr::select(linked_fate, 
+                      linked_progress, 
+                      linked_hurt) %>%
+        ckap(R = 1000) # With bootstrapping 
+
+    irr$ub %>% as.numeric()
+  
+}
+
+reliability_boot_lb <- function(data){
+  
+    irr <- df %>%
+        dplyr::select(linked_fate, 
+                      linked_progress, 
+                      linked_hurt) %>%
+    ckap(R = 1000) # With bootstrapping 
+  
+  irr$lb %>% as.numeric()
+  
+}
+
+group_diff_in_means <- function(data, group_var, var1, var2){
+  
+    data %>%
+        group_by({{group_var}}) %>%
+        summarize(
+            diff = mean({{var1}}) - mean({{var2}}),
+            conf = ((
+                t.test({{var1}}, {{var2}})$conf.int[2]) - 
+                t.test({{var1}}, {{var2}})$conf.int[1])/2,
+            boot.conf = ((
+                MKinfer::boot.t.test({{var1}}, {{var2}}, R= 999)$boot.conf.int[2]) - 
+                MKinfer::boot.t.test({{var1}}, {{var2}}, R= 999)$boot.conf.int[1])/2)
+  
 }
 

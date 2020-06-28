@@ -91,7 +91,8 @@ summary_stat %>%
       theme_base() +
       geom_hline(yintercept = 0, linetype = "dashed") +
       labs(x = "Race", y = "Mean",
-           title = "Average responses by racial groups") 
+           title = "Average responses by racial groups") +
+  theme_pubr()
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
 ```
@@ -186,44 +187,51 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.
 ### 4. Reliability test 
 
 ```{r}
-# Reliability tests 
 
-## No bootstrapping 
+# Summarise 
+rel_tests <- df %>%
+    group_by(race) %>%
+    nest() %>%
+    mutate(kappa = map(data, reliability_test), 
+           kappa_weight = map(data, reliability_weight_test),
+           kappa_boot_mean = map(data, reliability_boot_mean),
+           kappa_boot_ub = map(data, reliability_boot_ub),
+           kappa_boot_lb = map(data, reliability_boot_lb)
+           )
 
-kappa_plot <- 
-  
-data.frame(Kappa = c(reliability_test(df %>% filter(race == "Asians")), 
-                     reliability_test(df %>% filter(race == "Latinx")), 
-                     reliability_test(df %>% filter(race == "Whites")), 
-                     reliability_test(df %>% filter(race == "Blacks"))),
-           Race = c("Asians","Latinx","Whites","Blacks")) %>%
-  ggplot(aes(x = Race, y = Kappa)) +
-  geom_point() +  labs(title = "Reliability test", 
-                                          y = "Conger's Kappa") 
+# Unnest 
+rel_tests <- rel_tests %>%
+    unnest(c(kappa, kappa_weight, 
+             kappa_boot_mean, 
+             kappa_boot_ub, 
+             kappa_boot_lb))
 
-kappa_weight_plot <- data.frame(Kappa = c(reliability_weight_test(df %>% filter(race == "Asians")), 
-                     reliability_weight_test(df %>% filter(race == "Latinx")), 
-                     reliability_weight_test(df %>% filter(race == "Whites")), 
-                     reliability_weight_test(df %>% filter(race == "Blacks"))),
-           Race = c("Asians","Latinx","Whites","Blacks")) %>%
-  ggplot(aes(x = Race, y = Kappa)) +
-  geom_point() +  labs(title = "Reliability test (with quadratic weighting)", 
-                                          y = "Conger's Kappa") 
+```
+
+```{r}
+# Kappa plot 
+kappa_plot <- rel_tests %>%
+    ggplot(aes(x = race, y = kappa)) +
+        geom_point() +  
+        labs(title = "Reliability test",
+             x = "Race",
+             y = "Conger's Kappa") 
+
+# With quadratic weighting 
+kappa_weight_plot <- rel_tests %>%
+    ggplot(aes(x = race, y = kappa_weight)) +
+        geom_point() +  
+        labs(title = "Reliability test (with quadratic weighting)",
+             x = "Race",
+             y = "Conger's Kappa") 
 
 ## With bootstrapping 
-
-r1 <- reliability_boot_test(df %>% filter(race == "Asians"))
-r2 <- reliability_boot_test(df %>% filter(race == "Latinx"))
-r3 <- reliability_boot_test(df %>% filter(race == "Whites"))
-r4 <- reliability_boot_test(df %>% filter(race == "Blacks"))
-
-kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
-           ub = c(r1[2], r2[2], r3[2], r4[2]),
-           lb = c(r1[3], r2[3], r3[3], r4[3]),
-           Race = c("Asians","Latinx","Whites","Blacks")) %>%
-  ggplot(aes(x = Race, y = Kappa, ymax = ub, ymin = lb)) +
-  geom_pointrange() +  labs(title = "Reliability test (with bootstrapping)", 
-                                          y = "Conger's Kappa") 
+kappa_boot_plot <- rel_tests %>%   
+    ggplot(aes(x = race, y = kappa_boot_mean, ymax = kappa_boot_ub, ymin = kappa_boot_lb)) +
+        geom_pointrange() +  
+        labs(title = "Reliability test (with bootstrapping)",
+             x = "Race",
+             y = "Conger's Kappa") 
 
 kappa_plot / kappa_weight_plot / kappa_boot_plot
 
@@ -237,28 +245,46 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_test
 
 ```{r}
 
-# Individual case analysis 
+# Create weighted outcome variables 
 
-diff_fate_progress <- df %>%
-  group_by(race) %>%
-  summarize(
-    diff = mean(linked_fate) - mean(linked_progress),
-    conf = ((t.test(linked_fate, linked_progress)$conf.int[2]) - t.test(linked_fate, linked_progress)$conf.int[1])/2,
-    boot.conf = ((MKinfer::boot.t.test(linked_fate, linked_progress, R= 999)$boot.conf.int[2]) - MKinfer::boot.t.test(linked_fate, linked_progress, R= 999)$boot.conf.int[1])/2
-    )
+df <- df %>%
+    mutate(wt_linked_fate = linked_fate * WEIGHT, 
+           wt_linked_progress = linked_progress * WEIGHT, 
+           wt_linked_hurt = linked_hurt * WEIGHT)
 
-diff_fate_hurt <- df %>%
-  group_by(race) %>%
-  summarize(
-    diff = mean(linked_fate) - mean(linked_hurt),
-    conf = ((t.test(linked_fate, linked_hurt)$conf.int[2]) - t.test(linked_fate, linked_hurt)$conf.int[1])/2,
-    boot.conf = ((MKinfer::boot.t.test(linked_fate, linked_hurt, R= 999)$boot.conf.int[2]) - MKinfer::boot.t.test(linked_fate, linked_hurt, R= 999)$boot.conf.int[1])/2
-    )
+```
+
+```{r}
+# Unweighted 
+diff_fate_progress <- group_diff_in_means(
+    df, race, linked_fate, linked_progress)
+
+diff_fate_hurt <- group_diff_in_means(
+    df, race, linked_fate, linked_hurt)
+
+# Weighted 
+diff_fate_progress_wt <- group_diff_in_means(
+    df, race, wt_linked_fate, wt_linked_progress)
+
+diff_fate_hurt_wt <- group_diff_in_means(
+    df, race, wt_linked_fate, wt_linked_hurt)
 
 # Combining the results 
 
-diff_results <- bind_rows(mutate(diff_fate_progress, Type = "Progress - Fate"),
-          mutate(diff_fate_hurt, Type = "Hurt - Fate"))
+diff_results <- bind_rows(
+    mutate(diff_fate_progress, 
+           Outcome = "Progress - Fate", 
+           Type = "Unweighted"),
+    mutate(diff_fate_hurt, 
+           Outcome = "Hurt - Fate",
+           Type = "Unweighted"),
+    mutate(diff_fate_progress_wt, 
+           Outcome = "Progress - Fate", 
+           Type = "Weighted"),
+    mutate(diff_fate_hurt_wt, 
+           Outcome = "Hurt - Fate",
+           Type = "Weighted"),
+    )
 
 ```
 
@@ -267,30 +293,40 @@ diff_results <- bind_rows(mutate(diff_fate_progress, Type = "Progress - Fate"),
 ```{r}
 
 d1 <- diff_results %>%  
-  ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
-             ymax = -diff + conf, 
-             ymin = -diff - conf)) +
-    geom_pointrange() +
-    
-    labs(x = "Race", y = "Difference in means",
-         title = "Difference of means test results ") +
-    geom_hline(yintercept = 0, linetype = "dashed") +
-    facet_wrap(~Type) 
+    ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
+           ymax = -diff + conf, 
+           ymin = -diff - conf,
+           col = Type)) +
+        geom_pointrange() +
+        labs(x = "Race", 
+             y = "Difference in means",
+             title = "Difference of means test results ") +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") +
+        facet_wrap(~Outcome) +
+        theme_pubr()
 
+```
+
+```{r}
 d2 <- diff_results %>%  
-  ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
-             ymax = -diff + boot.conf, 
-             ymin = -diff - boot.conf)) +
-    geom_pointrange() +
-    
-    labs(x = "Race", y = "Difference in means",
-         title = "Difference of means test results (with Bootstrapped CIs)") +
-    geom_hline(yintercept = 0, linetype = "dashed") +
-    facet_wrap(~Type) 
-  
-d1
+   ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
+           ymax = -diff + boot.conf, 
+           ymin = -diff - boot.conf,
+           col = Type)) +
+        geom_pointrange() +
+        labs(x = "Race", 
+             y = "Difference in means",
+             title = "Difference of means test results (with Bootstrapped CIs)") +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") +
+        facet_wrap(~Outcome) +
+        theme_pubr()
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
+d1 / d2 
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"), 
+       height = 10)
 
 ```
 
