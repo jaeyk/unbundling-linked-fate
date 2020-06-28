@@ -12,31 +12,40 @@ html_document:
 ```{r}
 
 # Clean up the environment
-
 rm(list = ls())
 
 # Import libraries (adapted from this link: https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them)
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
-        tidyverse, # for the tidyverse framework
-        naniar, # for missing data
-        mice, # for imputation
-        ggpubr, # for arranging ggplots   
-        ggthemes, # for fancy ggplot themes
-        BaylorEdPsych, # testing patterns among missing values
-        MKinfer, # for inferential statistics 
-        wBoot, # for bootstrapping methods 
-        plotrix, # for various plotting functions
-        PerformanceAnalytics, # for corr plots 
-        GGally, # for corr plots
-        patchwork, # for easy ggarrange
-        psych, # for psychometric analysis
-        irr, # reliability test
-        rel # for bootstrapping kappa
+    tidyverse, # for the tidyverse framework
+    naniar, # for missing data
+    mice, # for imputation
+    ggpubr, # for arranging ggplots   
+    ggthemes, # for fancy ggplot themes
+    MKinfer, # for inferential statistics 
+    wBoot, # for bootstrapping methods 
+    plotrix, # for various plotting functions
+    PerformanceAnalytics, # for corr plots 
+    GGally, # for corr plots
+    patchwork, # for easy ggarrange
+    psych, # for psychometric analysis
+    irr, # for reliability test
+    rel, # for bootstrapping kappa
+    strapgod, # for bootstrapping
+    here # for self-contained projects
 )
 
-theme_set(theme_base())
+devtools::install_github("jaeyk/makereproducible",
+        dependencies = TRUE)
+
+library(makereproducible)
+
+# Custom functions 
+source(here("functions", "summarize_survey.r"))
+
+# for publication-friendly theme 
+theme_set(theme_pubr())
 
 ```
 
@@ -45,13 +54,14 @@ theme_set(theme_base())
 ```{r}
 
 # Importing data 
-df <- read_csv("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv")
+df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv"))
 
-# Excluding other respondents (too small to calucate CIs)
+# Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
 
 # Using only complete cases
-df <- df[complete.cases(df),] %>% as.data.frame()
+df <- df[complete.cases(df),] %>% 
+    as.data.frame() 
 
 ```
 
@@ -61,25 +71,11 @@ df <- df[complete.cases(df),] %>% as.data.frame()
 
 ```{r}
 
-fate_stat <- df %>%
-  group_by(race) %>%
-  summarize(mean = mean(linked_fate),
-            se = std.error(linked_fate))
+summary_stat <- bind_rows(
+    mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
+    mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
+    mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt"))
 
-progress_stat <- df %>%
-  group_by(race) %>%
-  summarize(mean = mean(linked_progress),
-            se = std.error(linked_progress))
-
-hurt_stat <- df %>%
-  group_by(race) %>%
-  summarize(mean = mean(linked_hurt),
-            se = std.error(linked_hurt))
-
-summary_stat <- bind_rows(mutate(fate_stat, Type = "Linked fate"),
-                          mutate(progress_stat, Type = "Linked progress"),
-                          mutate(hurt_stat, Type = "Linked hurt"))
-  
 ```
 
 #### 2.2. Visualizing the results 
@@ -87,27 +83,23 @@ summary_stat <- bind_rows(mutate(fate_stat, Type = "Linked fate"),
 ```{r}
 
 summary_stat %>%  
-  ggplot(aes(x = fct_reorder(race, mean), y = mean, 
-             ymax = mean + se, 
-             ymin = mean - se, col = Type)) +
-    geom_pointrange() +
-    coord_flip() +
-    theme_base() +
-    geom_hline(yintercept = 0, linetype = "dashed") +
-    labs(x = "Race", y = "Mean",
-         title = "Average responses by racial groups") 
+    ggplot(aes(x = fct_reorder(race, mean), y = mean, 
+               ymax = mean + se, 
+               ymin = mean - se, col = Type)) +
+      geom_pointrange() +
+      coord_flip() +
+      theme_base() +
+      geom_hline(yintercept = 0, linetype = "dashed") +
+      labs(x = "Race", y = "Mean",
+           title = "Average responses by racial groups") 
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png")
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
 ```
 
   
 ### 3. Correlation analysis
 
-For more information, see [this blog post](http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r).
-
-- Person correlation: 1. assuming a linear dependence between X and Y, assuming X and Y are from normal distribution 
-- Kendal tau and Spearman rho: rank-based correlation coefficients 
-- All tests are two-sided.
+Note that all tests are two-sided.
 
 ```{r}
 
@@ -118,20 +110,29 @@ table(df$race)
 #### 3.1. Density plots
 
 ```{r}
-# Create a custom plot 
-corr_plot <- function(data){data %>%
-  gather(Measures, Responses, linked_fate, linked_progress, linked_hurt) %>%
-  ggplot(aes(x = Responses)) + geom_density() +  labs(y = "Density") + facet_wrap(~Measures)}
 
-# Apply to each data and bind htem 
-p1 <- corr_plot(df %>% filter(race == "Asians")) + ggtitle("Asian Americans")
-p2 <- corr_plot(df %>% filter(race == "Blacks")) + ggtitle("Blacks")
-p3 <- corr_plot(df %>% filter(race == "Whites")) + ggtitle("Whites")
-p4 <- corr_plot(df %>% filter(race == "Latinx")) + ggtitle("Latinx")
+# Apply to each data and bind them 
+
+p1 <- corr_plot(df %>% 
+                  filter(race == "Asians")) +    
+                  ggtitle("Asian Americans")
+
+p2 <- corr_plot(df %>% 
+                  filter(race == "Blacks")) + 
+                  ggtitle("Blacks")
+
+p3 <- corr_plot(df %>% 
+                  filter(race == "Whites")) + 
+                  ggtitle("Whites")
+
+p4 <- corr_plot(df %>% 
+                  filter(race == "Latinx")) + 
+                  ggtitle("Latinx")
 
 p1 + p4 + p3 + p2
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/density_plot.png", width = 10)
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/density_plot.png"), 
+       width = 10)
 ```
 
 #### 3.2. Four correlation coefficients 
@@ -141,28 +142,24 @@ ggsave("/home/jae/validating-two-linked-fates/outputs/density_plot.png", width =
 # Individual case analysis 
 
 # Fate - Progress
-fate_progress <- df %>%
-  group_by(race) %>%
-  summarize(Pearson = cor.test(linked_fate, linked_progress, method = c("pearson"))$estimate %>% as.numeric(),
-            Boot_Pearson = boot.cor.bca(linked_fate, linked_progress)$Boot.values %>% mean(), 
-            Kendall = cor.test(linked_fate, linked_progress, method = c("kendall"))$estimate %>% as.numeric(),
-            Spearman = cor.test(linked_fate, linked_progress, method = c("spearman"))$estimate %>% as.numeric())
+fate_progress <- summarise_coeff(
+    df, race, linked_fate, linked_progress)
 
 # Fate - Hurt 
-fate_hurt <- df %>%
-  group_by(race) %>%
-  summarize(Pearson = cor.test(linked_fate, linked_hurt, method = c("pearson"))$estimate %>% as.numeric(),
-            Boot_Pearson = boot.cor.bca(linked_fate, linked_hurt)$Boot.values %>% mean(),
-            Kendall = cor.test(linked_fate, linked_hurt, method = c("kendall"))$estimate %>% as.numeric(),
-            Spearman = cor.test(linked_fate, linked_hurt, method = c("spearman"))$estimate %>% as.numeric())
+fate_hurt <- summarise_coeff(
+    df, race, linked_fate, linked_hurt)
 
 # Combining the results 
-
-cor_results <- bind_rows(mutate(fate_progress, Type = "fate_progress"),
-          mutate(fate_hurt, Type = "fate_hurt"))
+cor_results <- bind_rows(
+    mutate(fate_progress, Type = "fate_progress"),
+    mutate(fate_hurt, Type = "fate_hurt")
+  )
 
 cor_results <- cor_results %>%
-  gather(Test, coeffs, c("Pearson", "Boot_Pearson", "Kendall", "Spearman"))
+    pivot_longer(
+      cols = c("Pearson", "Kendall", "Spearman"), 
+      names_to = "Test", 
+      values_to = "coeffs")
 
 ```
 
@@ -170,16 +167,19 @@ cor_results <- cor_results %>%
 
 ```{r}
 cor_results %>%
-  mutate(coeffs = round(coeffs, 4)) %>% 
-  ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
-  geom_col(position = "dodge") +
-  facet_wrap(~race) +
-  coord_flip() + 
-  
-  labs(x = "Race", y = "Correlation coefficients", 
-       title = "Correlation test resuts")
+    mutate(coeffs = round(coeffs, 4)) %>% 
+    mutate(Type = recode(Type, 
+           'fate_hurt' = 'Fate - Hurt',
+           'fate_progress' = 'Fate - Progress'
+           )) %>%
+    ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
+        geom_col(position = "dodge") +
+        facet_wrap(~race) +
+        coord_flip() + 
+        labs(x = "Race", y = "Correlation coefficients", 
+        title = "Correlation test resuts")
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
 
 ```
 
@@ -192,28 +192,47 @@ ggsave("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png")
 reliability_test <- function(data){
 
 irr <- data %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  ckap(R = 0) # Conger's kappa, No bootstrapping 
-irr$est %>% as.numeric()}
+    dplyr::select(linked_fate, 
+                  linked_progress, 
+                  linked_hurt) %>%
+    ckap(R = 0) # Conger's kappa, No bootstrapping 
+    
+irr$est %>% 
+    as.numeric()
 
-reliability_weight_test <- function(data){
-irr <- data %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  ckap(R = 0, weight = "quadratic") # Conger's kappa, linear weighting 
-irr$est %>% as.numeric()}
-  
-reliability_boot_test <- function(data){
-irr <- (df %>%
-  dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-  ckap(R = 999)) # With bootstrapping 
-  
-kappa <- irr$est %>% as.numeric()
-ub <- irr$ub %>% as.numeric()
-lb <- irr$lb %>% as.numeric()
-
-return(c(kappa, ub, lb))
 }
 
+```
+
+```{r}
+reliability_weight_test <- function(data){
+  
+    irr <- data %>%
+      dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+      ckap(R = 0, weight = "quadratic") # Conger's kappa, linear weighting 
+    irr$est %>% as.numeric()
+}
+
+```
+
+```{r}
+reliability_boot_test <- function(data){
+
+    irr <- (df %>%
+    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
+    ckap(R = 999)) # With bootstrapping 
+  
+    kappa <- irr$est %>% as.numeric()
+    ub <- irr$ub %>% as.numeric()
+    lb <- irr$lb %>% as.numeric()
+
+    return(c(kappa, ub, lb))
+
+}
+
+```
+
+```{r}
 # Reliability tests 
 
 ## No bootstrapping 
@@ -255,7 +274,7 @@ kappa_boot_plot <- data.frame(Kappa = c(r1[1], r2[1], r3[1], r4[1]),
 
 kappa_plot / kappa_weight_plot / kappa_boot_plot
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png", height = 8, width = 8)
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png"), height = 8, width = 8)
   
 ```
 
@@ -318,7 +337,7 @@ d2 <- diff_results %>%
   
 d1
 
-ggsave("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png")
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
 
 ```
 
