@@ -169,8 +169,8 @@ cor_results <- cor_results %>%
 cor_results %>%
     mutate(coeffs = round(coeffs, 4)) %>% 
     mutate(Type = recode(Type, 
-           'fate_hurt' = 'Fate - Hurt',
-           'fate_progress' = 'Fate - Progress'
+           'fate_hurt' = 'Fate <-> Hurt',
+           'fate_progress' = 'Fate <-> Progress'
            )) %>%
     ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
         geom_col(position = "dodge") +
@@ -184,53 +184,6 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.
 ```
 
 ### 4. Reliability test 
-
-```{r}
-
-# Create a function
-  
-reliability_test <- function(data){
-
-irr <- data %>%
-    dplyr::select(linked_fate, 
-                  linked_progress, 
-                  linked_hurt) %>%
-    ckap(R = 0) # Conger's kappa, No bootstrapping 
-    
-irr$est %>% 
-    as.numeric()
-
-}
-
-```
-
-```{r}
-reliability_weight_test <- function(data){
-  
-    irr <- data %>%
-      dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-      ckap(R = 0, weight = "quadratic") # Conger's kappa, linear weighting 
-    irr$est %>% as.numeric()
-}
-
-```
-
-```{r}
-reliability_boot_test <- function(data){
-
-    irr <- (df %>%
-    dplyr::select(linked_fate, linked_progress, linked_hurt) %>%
-    ckap(R = 999)) # With bootstrapping 
-  
-    kappa <- irr$est %>% as.numeric()
-    ub <- irr$ub %>% as.numeric()
-    lb <- irr$lb %>% as.numeric()
-
-    return(c(kappa, ub, lb))
-
-}
-
-```
 
 ```{r}
 # Reliability tests 
