@@ -50,7 +50,7 @@ head(df)
 
 ```{r}
 df <- df %>%
-  dplyr::select(ETHNICITY, # ETHNICITY weight: 1 - White, 2 - Latino, 3 - Black, 4 - Asian, 5 - Other/Refuesed/No answer
+  dplyr::select(ETHNICITY￣, # ETHNICITY weight: 1 - White, 2 - Latino, 3 - Black, 4 - Asian, 5 - Other/Refuesed/No answer
                 Q16d1, # Linked fate:  Do you agree or disagree - What happens to (Latinos/ whites/ blacks and African Americans / Asians/ Pacific Islanders/ American Indians) in this country will have something to do with what happens in my life (1 - Agree strongly, 4 - Disagree strongly)
                 Q16d2, # Linked progress: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
                 Q16d3, # Linked hurt: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
