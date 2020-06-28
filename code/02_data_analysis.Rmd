@@ -323,10 +323,9 @@ d2 <- diff_results %>%
         facet_wrap(~Outcome) +
         theme_pubr()
 
-d1 / d2 
+d1 
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"), 
-       height = 10)
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
 
 ```
 
