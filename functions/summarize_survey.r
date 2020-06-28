@@ -10,6 +10,10 @@ corr_plot <- function(data){
     pivot_longer(cols = c(linked_fate, linked_progress, linked_hurt),
                  names_to = "Measures", 
                  values_to = "Responses") %>%
+    mutate(Measures = recode(Measures, 
+                             "linked_fate" = "Linked fate",
+                             "linked_progress" = "Linked progress",
+                             "linked_hurt" = "Linked hurt")) %>%
     ggplot(aes(x = Responses)) + 
         geom_density() +  
         labs(y = "Density") + 
