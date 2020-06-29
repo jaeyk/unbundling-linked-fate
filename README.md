@@ -95,6 +95,11 @@ Finally, I would like to revisit Figure 1 and stress the extent to which using t
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
 Figure 5. The difference in means test results
 
+#### Regression analysis [TBD]
+
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/ols_coeffs.png)
+Figure 6. OLS estimates
+
 #### Concluding remarks
 
 1. Why was the standard linked question able to generate the most positive responses? One possibility was because the wording was vague and general. Thus, it left room for respondents to interpret the question in whatever way they preferred.
