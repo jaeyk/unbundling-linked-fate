@@ -357,7 +357,7 @@ df <- df %>%
 
 ```{r}
 
-df_reg <- bind_rows(
+df_ols <- bind_rows(
   
     # Unweighted group 
           df %>% 
@@ -387,14 +387,58 @@ df_reg <- bind_rows(
 
 ```{r}
 
-df_reg <- df_reg %>%
+df_tidied <- df_ols %>%
     unnest(tidied = map(ols, ~tidy(., conf.int = TRUE)))
+
+df_glanced <- df_ols %>%
+    unnest(glanced = map(ols, broom::glance)) 
 
 ```
 
+- Model fit 
+
 ```{r}
 
-df_reg %>%
+fit1 <- df_glanced %>%
+    mutate(DV = recode(DV, 
+           'fate_progress' = 'Progress - Fate',
+           'fate_hurt' = 'Hurt - Fate')) %>% 
+    ggplot(aes(x = fct_reorder(race, r.squared), 
+               y = r.squared, 
+               col = type)) +
+        geom_point() +
+        coord_flip() +
+        labs(x = "", title = "R-squared",
+             col = "Type") +
+        facet_wrap(~DV) +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") 
+
+fit2 <- df_glanced %>%
+    mutate(DV = recode(DV, 
+           'fate_progress' = 'Progress - Fate',
+           'fate_hurt' = 'Hurt - Fate')) %>% 
+    ggplot(aes(x = fct_reorder(race, r.squared), 
+               y = adj.r.squared, 
+               col = type)) +
+        geom_point() +
+        coord_flip() +
+        labs(x = "", title = "Adjusted R-squared",
+             col = "Type") +
+        facet_wrap(~DV) +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") 
+
+fit1 / fit2 
+
+ggsave(here("outputs", "ols_fits.png"), height = 10)
+```
+
+- Coefficients 
+
+```{r}
+
+df_tidied %>%
     filter(!grepl("cept", term)) %>%
     mutate(term = recode(term,
           'for_born' = 'Foreign born',
@@ -415,7 +459,8 @@ df_reg %>%
         facet_grid(DV ~ race) +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") 
-  
+
+ggsave(here("outputs", "ols_coeffs.png"))
 ```
 
 ### 7 Causal forest 
