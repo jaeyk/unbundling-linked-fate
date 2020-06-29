@@ -246,46 +246,19 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_test
 
 ```{r}
 
-# Create weighted outcome variables 
-
-df <- df %>%
-    mutate(wt_linked_fate = linked_fate * WEIGHT, 
-           wt_linked_progress = linked_progress * WEIGHT, 
-           wt_linked_hurt = linked_hurt * WEIGHT)
-
-```
-
-```{r}
-
-# Unweighted 
 diff_fate_progress <- group_diff_in_means(
     df, race, linked_fate, linked_progress)
 
 diff_fate_hurt <- group_diff_in_means(
     df, race, linked_fate, linked_hurt)
 
-# Weighted 
-diff_fate_progress_wt <- group_diff_in_means(
-    df, race, wt_linked_fate, wt_linked_progress)
-
-diff_fate_hurt_wt <- group_diff_in_means(
-    df, race, wt_linked_fate, wt_linked_hurt)
-
 # Combining the results 
 
 diff_results <- bind_rows(
     mutate(diff_fate_progress, 
-           Outcome = "Progress - Fate", 
-           Type = "Unweighted"),
+           Outcome = "Progress - Fate"),
     mutate(diff_fate_hurt, 
-           Outcome = "Hurt - Fate",
-           Type = "Unweighted"),
-    mutate(diff_fate_progress_wt, 
-           Outcome = "Progress - Fate", 
-           Type = "Weighted"),
-    mutate(diff_fate_hurt_wt, 
-           Outcome = "Hurt - Fate",
-           Type = "Weighted"),
+           Outcome = "Hurt - Fate")
     )
 
 ```
@@ -295,7 +268,6 @@ diff_results <- bind_rows(
 ```{r}
 
 diff_results %>%  
-    filter(Type == "Unweighted") %>%
     ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
            ymax = -diff + conf, 
            ymin = -diff - conf)) +
@@ -354,29 +326,17 @@ df
 
 ```{r}
 
-df_binded <- bind_rows(
-  
-    # Unweighted group 
-          df %>% 
-    mutate(fate_progress = -(linked_fate - linked_progress), 
-           type = "Unweighted") %>%
-    mutate(fate_hurt = -(linked_fate - linked_hurt), 
-           type = "Unweighted"),
+df_binded <- df %>% 
+    mutate(fate_progress = -(linked_fate - linked_progress)) %>%
+    mutate(fate_hurt = -(linked_fate - linked_hurt)) %>%
 
-    # Weighted group 
-          df %>%
-    mutate(fate_progress = -(wt_linked_fate - wt_linked_progress), 
-           type = "Weighted") %>%
-    mutate(fate_hurt = -(wt_linked_fate - wt_linked_hurt), 
-           type = "Weighted")) %>%
-  
     # Row bind then pivot longer 
     pivot_longer(cols = c("fate_progress", "fate_hurt"),
                  names_to = "DV",
                  values_to = "difference")
 
 df_ols <- df_binded %>%
-    group_by(type, DV) %>%
+    group_by(DV) %>%
     nest() %>%
     mutate(ols = map(data, ols))
 
@@ -402,13 +362,12 @@ fit1 <- df_glanced %>%
     mutate(DV = recode(DV, 
            'fate_progress' = 'Progress - Fate',
            'fate_hurt' = 'Hurt - Fate')) %>% 
-    ggplot(aes(x = fct_reorder(type, r.squared), 
+    ggplot(aes(x = fct_reorder(DV, r.squared), 
                y = r.squared)) +
         geom_point() +
         coord_flip() +
         labs(x = "", 
              title = "R-squared") +
-        facet_wrap(~DV) +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") 
 
@@ -416,19 +375,19 @@ fit2 <- df_glanced %>%
     mutate(DV = recode(DV, 
            'fate_progress' = 'Progress - Fate',
            'fate_hurt' = 'Hurt - Fate')) %>% 
-    ggplot(aes(x = fct_reorder(type, r.squared), 
+    ggplot(aes(x = fct_reorder(DV, r.squared), 
                y = adj.r.squared)) +
         geom_point() +
         coord_flip() +
         labs(x = "", 
              title = "Adjusted R-squared") +
-        facet_wrap(~DV) +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") 
 
 fit1 / fit2 
 
 ggsave(here("outputs", "ols_fits.png"), height = 10)
+
 ```
 
 - Coefficients 
@@ -450,7 +409,6 @@ df_tidied <- df_tidied %>%
 ```{r}
 
 df_tidied %>% 
-    filter(type == "Unweighted") %>%
     ggplot(aes(x = fct_reorder(term, estimate), 
                y = estimate, 
                ymax = conf.high, 
