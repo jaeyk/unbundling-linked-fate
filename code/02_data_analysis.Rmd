@@ -32,6 +32,7 @@ pacman::p_load(
     irr, # for reliability test
     rel, # for bootstrapping kappa
     strapgod, # for bootstrapping
+    grf, # for generalized random forest framework
     here # for self-contained projects
 )
 
