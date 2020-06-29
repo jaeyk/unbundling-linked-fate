@@ -122,5 +122,5 @@ group_diff_in_means <- function(data, group_var, var1, var2){
 }
 
 ols <- function(data){
-  lm(difference ~ Male + Female + Democrat + Republican + for_born + edu_level, data = data)  
+  lm(difference ~ White + Black + Asian + Latinx + Male + Female + Democrat + Republican + for_born + edu_level, data = data)  
 }

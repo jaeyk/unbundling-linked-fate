@@ -294,38 +294,18 @@ diff_results <- bind_rows(
 
 ```{r}
 
-d1 <- diff_results %>%  
+diff_results %>%  
+    filter(Type == "Unweighted") %>%
     ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
            ymax = -diff + conf, 
-           ymin = -diff - conf,
-           col = Type)) +
+           ymin = -diff - conf)) +
         geom_pointrange() +
         labs(x = "Race", 
              y = "Difference in means",
              title = "Difference of means test results ") +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") +
-        facet_wrap(~Outcome) +
-        theme_pubr()
-
-```
-
-```{r}
-d2 <- diff_results %>%  
-   ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
-           ymax = -diff + boot.conf, 
-           ymin = -diff - boot.conf,
-           col = Type)) +
-        geom_pointrange() +
-        labs(x = "Race", 
-             y = "Difference in means",
-             title = "Difference of means test results (with Bootstrapped CIs)") +
-        geom_hline(yintercept = 0, 
-                   linetype = "dashed") +
-        facet_wrap(~Outcome) +
-        theme_pubr()
-
-d1 
+        facet_wrap(~Outcome) 
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
 
@@ -342,23 +322,39 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_pl
 df <- df %>%
     mutate(
       
-           Gender = ifelse(Gender %in% c(1, 2), Gender, NA),
-           Male = ifelse(Gender == 1, 1, 0),
-           Female = ifelse(Gender == 2, 1, 0),
-           Democrat = ifelse(party_id == 1, 1, 0),
-           Republican = ifelse(party_id == 2, 1, 0),
+           Gender = factor(ifelse(Gender %in% c(1, 2), Gender, NA)),
+           
+           Male = factor(ifelse(Gender == 1, 1, 0)),
+           
+           Female = factor(ifelse(Gender == 2, 1, 0)),
+           
+           Democrat = factor(ifelse(party_id == 1, 1, 0)),
+           
+           Republican = factor(ifelse(party_id == 2, 1, 0)),
+           
+           White = factor(ifelse(str_detect(race, "White"), 1, 0)),
+           
+           Black = factor(ifelse(str_detect(race, "Black"), 1, 0)),
+
+           Asian = factor(ifelse(str_detect(race, "Asian"), 1, 0)),
+
+           Latinx = factor(ifelse(str_detect(race, "Latin"), 1, 0)),
+           
            for_born = ifelse(for_born %in% c(1, 2), for_born, NA), 
-           for_born = ifelse(for_born == 2, 1, 0),
+           
+           for_born = factor(ifelse(for_born == 2, 1, 0)),
+           
            edu_level = scales::rescale(edu_level)             
            )
 
+df
 ```
 
 #### 6.2. OLS 
 
 ```{r}
 
-df_ols <- bind_rows(
+df_binded <- bind_rows(
   
     # Unweighted group 
           df %>% 
@@ -377,8 +373,10 @@ df_ols <- bind_rows(
     # Row bind then pivot longer 
     pivot_longer(cols = c("fate_progress", "fate_hurt"),
                  names_to = "DV",
-                 values_to = "difference") %>%
-    group_by(race, type, DV) %>%
+                 values_to = "difference")
+
+df_ols <- df_binded %>%
+    group_by(type, DV) %>%
     nest() %>%
     mutate(ols = map(data, ols))
 
@@ -404,13 +402,12 @@ fit1 <- df_glanced %>%
     mutate(DV = recode(DV, 
            'fate_progress' = 'Progress - Fate',
            'fate_hurt' = 'Hurt - Fate')) %>% 
-    ggplot(aes(x = fct_reorder(race, r.squared), 
-               y = r.squared, 
-               col = type)) +
+    ggplot(aes(x = fct_reorder(type, r.squared), 
+               y = r.squared)) +
         geom_point() +
         coord_flip() +
-        labs(x = "", title = "R-squared",
-             col = "Type") +
+        labs(x = "", 
+             title = "R-squared") +
         facet_wrap(~DV) +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") 
@@ -419,13 +416,12 @@ fit2 <- df_glanced %>%
     mutate(DV = recode(DV, 
            'fate_progress' = 'Progress - Fate',
            'fate_hurt' = 'Hurt - Fate')) %>% 
-    ggplot(aes(x = fct_reorder(race, r.squared), 
-               y = adj.r.squared, 
-               col = type)) +
+    ggplot(aes(x = fct_reorder(type, r.squared), 
+               y = adj.r.squared)) +
         geom_point() +
         coord_flip() +
-        labs(x = "", title = "Adjusted R-squared",
-             col = "Type") +
+        labs(x = "", 
+             title = "Adjusted R-squared") +
         facet_wrap(~DV) +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") 
@@ -439,31 +435,34 @@ ggsave(here("outputs", "ols_fits.png"), height = 10)
 
 ```{r}
 
-df_tidied %>%
+df_tidied <- df_tidied %>%
     filter(!grepl("cept", term)) %>%
     mutate(term = recode(term,
-          'for_born' = 'Foreign born',
-          'edu_level' = 'Education level'
-    )) %>% 
+          "for_born" = 'Foreign born',
+          'edu_level' = 'Education level')) %>%
+    mutate(term = str_replace(term, "1", "")) %>%
     mutate(DV = recode(DV, 
            'fate_progress' = 'Progress - Fate',
-           'fate_hurt' = 'Hurt - Fate')) %>% 
+           'fate_hurt' = 'Hurt - Fate')) 
+
+```
+
+```{r}
+
+df_tidied %>% 
+    filter(type == "Unweighted") %>%
     ggplot(aes(x = fct_reorder(term, estimate), 
                y = estimate, 
                ymax = conf.high, 
-               ymin = conf.low,
-               col = type)) +
+               ymin = conf.low)) +
         geom_pointrange() +
         coord_flip() +
-        labs(x = "", y = "OLS Estimate",
-             col = "Type") +
-        facet_grid(DV ~ race) +
+        labs(x = "", y = "OLS Estimate") +
+        facet_grid(~DV) +
         geom_hline(yintercept = 0, 
                    linetype = "dashed") 
 
 ggsave(here("outputs", "ols_coeffs.png"))
+
 ```
-
-### 7 Causal forest 
-
 
