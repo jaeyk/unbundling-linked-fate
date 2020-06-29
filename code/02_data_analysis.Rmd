@@ -327,11 +327,8 @@ df
 ```{r}
 
 df_binded <- df %>% 
-    mutate(fate_progress = -(linked_fate - linked_progress)) %>%
-    mutate(fate_hurt = -(linked_fate - linked_hurt)) %>%
-
     # Row bind then pivot longer 
-    pivot_longer(cols = c("fate_progress", "fate_hurt"),
+    pivot_longer(cols = c("linked_fate","linked_progress","linked_hurt"),
                  names_to = "DV",
                  values_to = "difference")
 
@@ -358,10 +355,13 @@ df_glanced <- df_ols %>%
 
 ```{r}
 
-fit1 <- df_glanced %>%
+df_glanced <- df_glanced %>%
     mutate(DV = recode(DV, 
-           'fate_progress' = 'Progress - Fate',
-           'fate_hurt' = 'Hurt - Fate')) %>% 
+           'linked_fate' = 'Linked fate',
+           'linked_progress' = 'Linked progress',
+           "linked_hurt" = "Linked hurt"))
+
+fit1 <- df_glanced %>%
     ggplot(aes(x = fct_reorder(DV, r.squared), 
                y = r.squared)) +
         geom_point() +
@@ -372,9 +372,6 @@ fit1 <- df_glanced %>%
                    linetype = "dashed") 
 
 fit2 <- df_glanced %>%
-    mutate(DV = recode(DV, 
-           'fate_progress' = 'Progress - Fate',
-           'fate_hurt' = 'Hurt - Fate')) %>% 
     ggplot(aes(x = fct_reorder(DV, r.squared), 
                y = adj.r.squared)) +
         geom_point() +
@@ -395,6 +392,10 @@ ggsave(here("outputs", "ols_fits.png"), height = 10)
 ```{r}
 
 df_tidied <- df_tidied %>%
+    mutate(DV = recode(DV, 
+           'linked_fate' = 'Linked fate',
+           'linked_progress' = 'Linked progress',
+           "linked_hurt" = "Linked hurt")) %>%
     filter(!grepl("cept", term)) %>%
     mutate(term = recode(term,
           "for_born" = 'Foreign born',
