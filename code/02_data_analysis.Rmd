@@ -19,8 +19,7 @@ rm(list = ls())
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
     tidyverse, # for the tidyverse framework
-    naniar, # for missing data
-    mice, # for imputation
+    broom, # for tidying model objects  
     ggpubr, # for arranging ggplots   
     ggthemes, # for fancy ggplot themes
     MKinfer, # for inferential statistics 
@@ -116,7 +115,7 @@ table(df$race)
 
 p1 <- corr_plot(df %>% 
                   filter(race == "Asians")) +    
-                  ggtitle("Asian Americans")
+                  ggtitle("Asians")
 
 p2 <- corr_plot(df %>% 
                   filter(race == "Blacks")) + 
@@ -134,6 +133,7 @@ p1 + p4 + p3 + p2
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/density_plot.png"), 
        width = 10)
+
 ```
 
 #### 3.2. Four correlation coefficients 
@@ -158,9 +158,9 @@ cor_results <- bind_rows(
 
 cor_results <- cor_results %>%
     pivot_longer(
-      cols = c("Pearson", "Kendall", "Spearman"), 
-      names_to = "Test", 
-      values_to = "coeffs")
+        cols = c("Pearson", "Kendall", "Spearman"), 
+        names_to = "Test", 
+        values_to = "coeffs")
 
 ```
 
@@ -255,6 +255,7 @@ df <- df %>%
 ```
 
 ```{r}
+
 # Unweighted 
 diff_fate_progress <- group_diff_in_means(
     df, race, linked_fate, linked_progress)
@@ -328,4 +329,95 @@ d1
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
 
 ```
+
+### 6. Regression analysis 
+
+#### 6.1. Prepapring the data for modeling 
+
+```{r}
+
+# Create dummy variables to plug them into a regression + normalization 
+
+df <- df %>%
+    mutate(
+      
+           Gender = ifelse(Gender %in% c(1, 2), Gender, NA),
+           Male = ifelse(Gender == 1, 1, 0),
+           Female = ifelse(Gender == 2, 1, 0),
+           Democrat = ifelse(party_id == 1, 1, 0),
+           Republican = ifelse(party_id == 2, 1, 0),
+           for_born = ifelse(for_born %in% c(1, 2), for_born, NA), 
+           for_born = ifelse(for_born == 2, 1, 0),
+           edu_level = scales::rescale(edu_level)             
+           )
+
+```
+
+#### 6.2. OLS 
+
+```{r}
+
+df_reg <- bind_rows(
+  
+    # Unweighted group 
+          df %>% 
+    mutate(fate_progress = -(linked_fate - linked_progress), 
+           type = "Unweighted") %>%
+    mutate(fate_hurt = -(linked_fate - linked_hurt), 
+           type = "Unweighted"),
+
+    # Weighted group 
+          df %>%
+    mutate(fate_progress = -(wt_linked_fate - wt_linked_progress), 
+           type = "Weighted") %>%
+    mutate(fate_hurt = -(wt_linked_fate - wt_linked_hurt), 
+           type = "Weighted")) %>%
+  
+    # Row bind then pivot longer 
+    pivot_longer(cols = c("fate_progress", "fate_hurt"),
+                 names_to = "DV",
+                 values_to = "difference") %>%
+    group_by(race, type, DV) %>%
+    nest() %>%
+    mutate(ols = map(data, ols))
+
+```
+
+#### 6.3. Visualization
+
+```{r}
+
+df_reg <- df_reg %>%
+    unnest(tidied = map(ols, ~tidy(., conf.int = TRUE)))
+
+```
+
+```{r}
+
+df_reg %>%
+    filter(!grepl("cept", term)) %>%
+    mutate(term = recode(term,
+          'for_born' = 'Foreign born',
+          'edu_level' = 'Education level'
+    )) %>% 
+    mutate(DV = recode(DV, 
+           'fate_progress' = 'Progress - Fate',
+           'fate_hurt' = 'Hurt - Fate')) %>% 
+    ggplot(aes(x = fct_reorder(term, estimate), 
+               y = estimate, 
+               ymax = conf.high, 
+               ymin = conf.low,
+               col = type)) +
+        geom_pointrange() +
+        coord_flip() +
+        labs(x = "", y = "OLS Estimate",
+             col = "Type") +
+        facet_grid(DV ~ race) +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") 
+  
+```
+
+### 7 Causal forest 
+
 
