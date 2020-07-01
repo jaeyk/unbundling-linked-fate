@@ -1,0 +1,148 @@
+---
+title: "Data cleaning"
+author: "Jae Yeon Kim"
+output:
+html_document: 
+  toc: true
+  theme: united
+---
+
+## 0. Setup 
+
+```{r}
+
+# Clean up the environment
+rm(list = ls())
+
+# Import libraries 
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+    tidyverse, # for the tidyverse framework
+    naniar, # for missing data
+    mice, # for imputation
+    ggpubr, # for arranging ggplots   
+    ggthemes, # for fancy ggplot themes
+    here # for self-contained projects
+)
+
+devtools::install_github("jaeyk/makereproducible",
+        dependencies = TRUE)
+        
+library(makereproducible)
+
+source(here("functions", "clean_survey.r"))
+
+```
+
+### 1. Importing data 
+  
+```{r}
+
+df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/sub-data.txt"))
+
+dim(df)
+head(df)
+
+```
+
+### 2. Subsetting 
+
+```{r}
+df <- df %>%
+  dplyr::select(ETHNICITY, # ETHNICITY weight: 1 - White, 2 - Latino, 3 - Black, 4 - Asian, 5 - Other/Refuesed/No answer
+                Q16d1, # Linked fate:  Do you agree or disagree - What happens to (Latinos/ whites/ blacks and African Americans / Asians/ Pacific Islanders/ American Indians) in this country will have something to do with what happens in my life (1 - Agree strongly, 4 - Disagree strongly)
+                Q16d2, # Linked progress: Do you agree or disagree - When things get better for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get better for me
+                Q16d3, # Linked hurt: Do you agree or disagree - When things get worse for (Latinos/ whites/ blacks and African Americans/ Asians/ Pacific Islanders/ American Indians) in this country, then things will get worse for me
+
+                Q32a, # Generally speaking in politics do you think of yourself as a . . . Partisanship: 1 - GOP, 2 - Democrat, 3 - Neither 
+                WEIGHT, # Survey weight
+                AGE,
+                Gender, 
+                party, # part of registration 
+                Q40, # Foreign born status: 1 - Born in U.S., 2 - Born in another country 
+                Q16a) # Education level: 1 - lowest, 8 - highest 
+
+```
+
+### 3. Inspeacting missing values 
+
+- Inspecting missing data. 
+- Percentage of missing observations: only 1.8%
+
+```{r}
+vis_miss(df)
+```
+
+### 4. Multiple imputations 
+
+```{r}
+
+imp <- mice(df,
+     seed = 1234, # for reproducibility
+     m = 5, # the number of imputations
+     maxit = 10, # the max number of iterations 
+     method = "pmm", # predictive mean method
+     print = FALSE) 
+
+df <- mice::complete(imp) # extract the imputed data 
+
+```
+
+### 5. Rescaling and renaming variables 
+
+```{r}
+
+# Rescaling and renaming variables 
+df <- df %>%
+  mutate(Q16d1 = rescale(Q16d1),
+         Q16d2 = rescale(Q16d2), 
+         Q16d3 = rescale(Q16d3)) %>%
+  rename("linked_fate"= "Q16d1",
+         "linked_progress" = "Q16d2",
+         "linked_hurt" = "Q16d3",
+         "for_born" = "Q40",
+         "edu_level" = "Q16a",
+         "party_id" = "Q32a",
+         "party_reg" = "party",
+         "race" = "ETHNICITY")
+
+```
+
+### 6. Recoding values
+
+
+```{r}
+
+table(df$race) # We only include those responded 1-5 for Q16c variable 
+
+nrow(df) #4435 
+
+```
+
+```{r}
+df <- subset(df, race >= 1 & race <= 5) # Subsetting
+
+nrow(df) #4414 
+
+```
+
+```{r}
+
+# Reordering factors 
+
+df$race <- df$race %>%
+  as.character() %>%
+  recode("1" = "Whites", 
+        "2" = "Latinx", 
+        "3" = "Blacks", 
+        "4" = "Asians", 
+        "5" = "Other") %>%
+  as.factor()
+
+```
+
+```{r}
+write_csv(df, make_here("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv"))
+```
+

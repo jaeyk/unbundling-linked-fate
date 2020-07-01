@@ -1,0 +1,331 @@
+---
+title: "Data cleaning"
+author: "Jae Yeon Kim"
+output:
+html_document: 
+  toc: true
+  theme: united
+---
+
+## 0. Setup 
+
+```{r}
+
+# Clean up the environment
+rm(list = ls())
+
+# Import libraries (adapted from this link: https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them)
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+    tidyverse, # for the tidyverse framework
+    naniar, # for missing data
+    mice, # for imputation
+    ggpubr, # for arranging ggplots   
+    ggthemes, # for fancy ggplot themes
+    MKinfer, # for inferential statistics 
+    wBoot, # for bootstrapping methods 
+    plotrix, # for various plotting functions
+    PerformanceAnalytics, # for corr plots 
+    GGally, # for corr plots
+    patchwork, # for easy ggarrange
+    psych, # for psychometric analysis
+    irr, # for reliability test
+    rel, # for bootstrapping kappa
+    strapgod, # for bootstrapping
+    here # for self-contained projects
+)
+
+devtools::install_github("jaeyk/makereproducible",
+        dependencies = TRUE)
+
+library(makereproducible)
+
+# Custom functions 
+source(here("functions", "summarize_survey.r"))
+
+# for publication-friendly theme 
+theme_set(theme_pubr())
+
+```
+
+### 1. Importing data 
+
+```{r}
+
+# Importing data 
+df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv"))
+
+# Excluding other respondents (too small to calculate CIs)
+df <- subset(df, race != "Other")
+
+# Using only complete cases
+df <- df[complete.cases(df),] %>% 
+    as.data.frame() 
+
+```
+
+### 2. Descriptive analysis 
+
+#### 2.1. Mean and SEs
+
+```{r}
+
+summary_stat <- bind_rows(
+    mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
+    mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
+    mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt"))
+
+```
+
+#### 2.2. Visualizing the results 
+
+```{r}
+
+summary_stat %>%  
+    ggplot(aes(x = fct_reorder(race, mean), y = mean, 
+               ymax = mean + se, 
+               ymin = mean - se, col = Type)) +
+      geom_pointrange() +
+      coord_flip() +
+      theme_base() +
+      geom_hline(yintercept = 0, linetype = "dashed") +
+      labs(x = "Race", y = "Mean",
+           title = "Average responses by racial groups") +
+  theme_pubr()
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
+```
+
+  
+### 3. Correlation analysis
+
+Note that all tests are two-sided.
+
+```{r}
+
+table(df$race)
+
+```
+
+#### 3.1. Density plots
+
+```{r}
+
+# Apply to each data and bind them 
+
+p1 <- corr_plot(df %>% 
+                  filter(race == "Asians")) +    
+                  ggtitle("Asian Americans")
+
+p2 <- corr_plot(df %>% 
+                  filter(race == "Blacks")) + 
+                  ggtitle("Blacks")
+
+p3 <- corr_plot(df %>% 
+                  filter(race == "Whites")) + 
+                  ggtitle("Whites")
+
+p4 <- corr_plot(df %>% 
+                  filter(race == "Latinx")) + 
+                  ggtitle("Latinx")
+
+p1 + p4 + p3 + p2
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/density_plot.png"), 
+       width = 10)
+```
+
+#### 3.2. Four correlation coefficients 
+
+```{r}
+
+# Individual case analysis 
+
+# Fate - Progress
+fate_progress <- summarise_coeff(
+    df, race, linked_fate, linked_progress)
+
+# Fate - Hurt 
+fate_hurt <- summarise_coeff(
+    df, race, linked_fate, linked_hurt)
+
+# Combining the results 
+cor_results <- bind_rows(
+    mutate(fate_progress, Type = "fate_progress"),
+    mutate(fate_hurt, Type = "fate_hurt")
+  )
+
+cor_results <- cor_results %>%
+    pivot_longer(
+      cols = c("Pearson", "Kendall", "Spearman"), 
+      names_to = "Test", 
+      values_to = "coeffs")
+
+```
+
+#### 3.3. Visualizing the results  
+
+```{r}
+cor_results %>%
+    mutate(coeffs = round(coeffs, 4)) %>% 
+    mutate(Type = recode(Type, 
+           'fate_hurt' = 'Fate <-> Hurt',
+           'fate_progress' = 'Fate <-> Progress'
+           )) %>%
+    ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
+        geom_col(position = "dodge") +
+        facet_wrap(~race) +
+        coord_flip() + 
+        labs(x = "Race", y = "Correlation coefficients", 
+        title = "Correlation test resuts")
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
+
+```
+
+### 4. Reliability test 
+
+```{r}
+
+# Summarise 
+rel_tests <- df %>%
+    group_by(race) %>%
+    nest() %>%
+    mutate(kappa = map(data, reliability_test), 
+           kappa_weight = map(data, reliability_weight_test),
+           kappa_boot_mean = map(data, reliability_boot_mean),
+           kappa_boot_ub = map(data, reliability_boot_ub),
+           kappa_boot_lb = map(data, reliability_boot_lb)
+           )
+
+# Unnest 
+rel_tests <- rel_tests %>%
+    unnest(c(kappa, kappa_weight, 
+             kappa_boot_mean, 
+             kappa_boot_ub, 
+             kappa_boot_lb))
+
+```
+
+```{r}
+# Kappa plot 
+kappa_plot <- rel_tests %>%
+    ggplot(aes(x = race, y = kappa)) +
+        geom_point() +  
+        labs(title = "Reliability test",
+             x = "Race",
+             y = "Conger's Kappa") 
+
+# With quadratic weighting 
+kappa_weight_plot <- rel_tests %>%
+    ggplot(aes(x = race, y = kappa_weight)) +
+        geom_point() +  
+        labs(title = "Reliability test (with quadratic weighting)",
+             x = "Race",
+             y = "Conger's Kappa") 
+
+## With bootstrapping 
+kappa_boot_plot <- rel_tests %>%   
+    ggplot(aes(x = race, y = kappa_boot_mean, ymax = kappa_boot_ub, ymin = kappa_boot_lb)) +
+        geom_pointrange() +  
+        labs(title = "Reliability test (with bootstrapping)",
+             x = "Race",
+             y = "Conger's Kappa") 
+
+kappa_plot / kappa_weight_plot / kappa_boot_plot
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png"), height = 8, width = 8)
+  
+```
+
+### 5. Difference-in-means analysis 
+
+#### 5.1. Difference-in-means tests (T-tests)
+
+```{r}
+
+# Create weighted outcome variables 
+
+df <- df %>%
+    mutate(wt_linked_fate = linked_fate * WEIGHT, 
+           wt_linked_progress = linked_progress * WEIGHT, 
+           wt_linked_hurt = linked_hurt * WEIGHT)
+
+```
+
+```{r}
+# Unweighted 
+diff_fate_progress <- group_diff_in_means(
+    df, race, linked_fate, linked_progress)
+
+diff_fate_hurt <- group_diff_in_means(
+    df, race, linked_fate, linked_hurt)
+
+# Weighted 
+diff_fate_progress_wt <- group_diff_in_means(
+    df, race, wt_linked_fate, wt_linked_progress)
+
+diff_fate_hurt_wt <- group_diff_in_means(
+    df, race, wt_linked_fate, wt_linked_hurt)
+
+# Combining the results 
+
+diff_results <- bind_rows(
+    mutate(diff_fate_progress, 
+           Outcome = "Progress - Fate", 
+           Type = "Unweighted"),
+    mutate(diff_fate_hurt, 
+           Outcome = "Hurt - Fate",
+           Type = "Unweighted"),
+    mutate(diff_fate_progress_wt, 
+           Outcome = "Progress - Fate", 
+           Type = "Weighted"),
+    mutate(diff_fate_hurt_wt, 
+           Outcome = "Hurt - Fate",
+           Type = "Weighted"),
+    )
+
+```
+
+#### 5.2. Visualizing the results 
+
+```{r}
+
+d1 <- diff_results %>%  
+    ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
+           ymax = -diff + conf, 
+           ymin = -diff - conf,
+           col = Type)) +
+        geom_pointrange() +
+        labs(x = "Race", 
+             y = "Difference in means",
+             title = "Difference of means test results ") +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") +
+        facet_wrap(~Outcome) +
+        theme_pubr()
+
+```
+
+```{r}
+d2 <- diff_results %>%  
+   ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
+           ymax = -diff + boot.conf, 
+           ymin = -diff - boot.conf,
+           col = Type)) +
+        geom_pointrange() +
+        labs(x = "Race", 
+             y = "Difference in means",
+             title = "Difference of means test results (with Bootstrapped CIs)") +
+        geom_hline(yintercept = 0, 
+                   linetype = "dashed") +
+        facet_wrap(~Outcome) +
+        theme_pubr()
+
+d1 
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
+
+```
+

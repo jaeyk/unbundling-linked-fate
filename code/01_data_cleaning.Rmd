@@ -41,9 +41,6 @@ source(here("functions", "clean_survey.r"))
 
 df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/sub-data.txt"))
 
-dim(df)
-head(df)
-
 ```
 
 ### 2. Subsetting 
@@ -61,6 +58,7 @@ df <- df %>%
                 Gender, 
                 party, # part of registration 
                 Q40, # Foreign born status: 1 - Born in U.S., 2 - Born in another country 
+                Q43, # Income level: 1 - lowest, 6 - highest 
                 Q16a) # Education level: 1 - lowest, 8 - highest 
 
 ```
@@ -68,7 +66,7 @@ df <- df %>%
 ### 3. Inspeacting missing values 
 
 - Inspecting missing data. 
-- Percentage of missing observations: only 1.8%
+- Percentage of missing observations: only 1.9%
 
 ```{r}
 vis_miss(df)
@@ -105,7 +103,8 @@ df <- df %>%
          "edu_level" = "Q16a",
          "party_id" = "Q32a",
          "party_reg" = "party",
-         "race" = "ETHNICITY")
+         "race" = "ETHNICITY",
+         "income_level" = "Q43")
 
 ```
 

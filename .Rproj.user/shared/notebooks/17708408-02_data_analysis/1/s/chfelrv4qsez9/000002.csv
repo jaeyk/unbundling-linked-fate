@@ -1,0 +1,8 @@
+"0",""
+"0","# Create weighted outcome variables "
+"0",""
+"0","df <- df %>%"
+"0","    mutate(wt_linked_fate = linked_fate * WEIGHT, "
+"0","           wt_linked_progress = linked_progress * WEIGHT, "
+"0","           wt_linked_hurt = linked_hurt * WEIGHT)"
+"0",""

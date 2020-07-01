@@ -1,0 +1,29 @@
+"0",""
+"0","# Importing data "
+"0","df <- read_csv(make_here(""/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv""))"
+"2","File name: processed_survey.csv
+"
+"2","Subdirectory name: raw_data
+"
+"2","Parsed with column specification:
+cols(
+  race = [31mcol_character()[39m,
+  linked_fate = [32mcol_double()[39m,
+  linked_progress = [32mcol_double()[39m,
+  linked_hurt = [32mcol_double()[39m,
+  party_id = [32mcol_double()[39m,
+  WEIGHT = [32mcol_double()[39m,
+  AGE = [32mcol_double()[39m,
+  Gender = [32mcol_double()[39m,
+  party_reg = [31mcol_character()[39m,
+  for_born = [32mcol_double()[39m,
+  edu_level = [32mcol_double()[39m
+)
+"
+"0","# Excluding other respondents (too small to calculate CIs)"
+"0","df <- subset(df, race != ""Other"")"
+"0",""
+"0","# Using only complete cases"
+"0","df <- df[complete.cases(df),] %>% "
+"0","    as.data.frame() "
+"0",""

@@ -59,14 +59,14 @@ In Figure 1, the x-axis indicates the average score of responses to linked fate-
 
 Figure 1 clearly demonstrates how the use of a different measure for linked fate yields a different level of response. Overall, the standard linked fate question drew the strongest expressed support for linked fate. On average, linked progress scored higher than linked hurt across all racial groups, including African Americans. These results do not necessarily mean that Dawson's theory is wrong because the data also provides evidence for the presence of linked hurt. However, the theory has failed to include the importance of linked progress mechanisms and its prevalence.
 
-#### Density plots
+#### Bar plots
 
-![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/density_plot.png)
+![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/bar_plot.png)
 Figure 2. Descriptive analysis
 
-In Figure 2, the x-axis indicates the multi-choices offered in the linked fate questions. The y-axis plots the variable’s kernel density estimations (KDE). The smooth line depicts the estimated underlying data distribution. This more detailed look at the data reveals several interesting patterns.
+In Figure 2, the x-axis indicates the multi-choices offered in the linked fate questions. The y-axis plots the count of these choices. This more detailed look at the data reveals several interesting patterns.
 
-The KDE pattern for the responses to the linked fate questions among African American respondents is consistent with the prediction of the black utility heuristics theory. The distribution is skewed left. It shows almost unanimous support for black solidarity.
+The pattern for the responses to the linked fate questions among African American respondents is consistent with the prediction of the black utility heuristics theory. The distribution is skewed left. It shows almost unanimous support for black solidarity.
 
 However, the same respondents became more skeptical when they were asked about the specific connection between their group and individual utility. We can see similar patterns across other racial groups, with white respondents’ answers representing an extreme example. In that case, the respondents began to disagree with the idea of white group consciousness more than they agreed with it.
 

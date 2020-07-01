@@ -108,31 +108,31 @@ table(df$race)
 
 ```
 
-#### 3.1. Density plots
+#### 3.1. Bar plots
 
 ```{r}
 
 # Apply to each data and bind them 
 
-p1 <- corr_plot(df %>% 
+p1 <- bar_plot(df %>% 
                   filter(race == "Asians")) +    
                   ggtitle("Asians")
 
-p2 <- corr_plot(df %>% 
+p2 <- bar_plot(df %>% 
                   filter(race == "Blacks")) + 
                   ggtitle("Blacks")
 
-p3 <- corr_plot(df %>% 
+p3 <- bar_plot(df %>% 
                   filter(race == "Whites")) + 
                   ggtitle("Whites")
 
-p4 <- corr_plot(df %>% 
+p4 <- bar_plot(df %>% 
                   filter(race == "Latinx")) + 
                   ggtitle("Latinx")
 
 p1 + p4 + p3 + p2
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/density_plot.png"), 
+ggsave(here("outputs","bar_plot.png"), 
        width = 10)
 
 ```
@@ -151,10 +151,15 @@ fate_progress <- summarise_coeff(
 fate_hurt <- summarise_coeff(
     df, race, linked_fate, linked_hurt)
 
+# Progress - Hurt 
+progress_hurt <- summarise_coeff(
+    df, race, linked_progress, linked_hurt)
+
 # Combining the results 
 cor_results <- bind_rows(
     mutate(fate_progress, Type = "fate_progress"),
-    mutate(fate_hurt, Type = "fate_hurt")
+    mutate(fate_hurt, Type = "fate_hurt"),
+    mutate(progress_hurt, Type = "progress_hurt")
   )
 
 cor_results <- cor_results %>%
@@ -172,7 +177,8 @@ cor_results %>%
     mutate(coeffs = round(coeffs, 4)) %>% 
     mutate(Type = recode(Type, 
            'fate_hurt' = 'Fate <-> Hurt',
-           'fate_progress' = 'Fate <-> Progress'
+           'fate_progress' = 'Fate <-> Progress',
+           'progress_hurt' = 'Progress <-> Hurt'
            )) %>%
     ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
         geom_col(position = "dodge") +
@@ -304,19 +310,13 @@ df <- df %>%
            
            Republican = factor(ifelse(party_id == 2, 1, 0)),
            
-           White = factor(ifelse(str_detect(race, "White"), 1, 0)),
-           
-           Black = factor(ifelse(str_detect(race, "Black"), 1, 0)),
-
-           Asian = factor(ifelse(str_detect(race, "Asian"), 1, 0)),
-
-           Latinx = factor(ifelse(str_detect(race, "Latin"), 1, 0)),
-           
            for_born = ifelse(for_born %in% c(1, 2), for_born, NA), 
            
            for_born = factor(ifelse(for_born == 2, 1, 0)),
            
-           edu_level = scales::rescale(edu_level)             
+           edu_level = scales::rescale(edu_level),
+           
+           income_level = scales::rescale(income_level)
            )
 
 df
@@ -397,10 +397,13 @@ df_tidied <- df_tidied %>%
            'linked_progress' = 'Linked progress',
            "linked_hurt" = "Linked hurt")) %>%
     filter(!grepl("cept", term)) %>%
-    mutate(term = recode(term,
-          "for_born" = 'Foreign born',
-          'edu_level' = 'Education level')) %>%
-    mutate(term = str_replace(term, "1", "")) %>%
+    mutate(term = term %>%   
+            str_replace_all("\\(|\\)", "") %>% # remove ( )
+            str_replace_all("factorrace", "") %>%
+            str_replace_all("income_level", "Income") %>%
+            str_replace_all("edu_level", "Education") %>% 
+            str_replace_all("for_born", "Foreign born") %>%
+            str_replace_all("1", "")) %>%
     mutate(DV = recode(DV, 
            'fate_progress' = 'Progress - Fate',
            'fate_hurt' = 'Hurt - Fate')) 

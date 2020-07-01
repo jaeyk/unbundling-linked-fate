@@ -5,7 +5,7 @@ mean_group_key <- function(data, group_var, key_var){
             se = std.error({{key_var}}))
 }
 
-corr_plot <- function(data){
+bar_plot <- function(data){
   data %>%
     pivot_longer(cols = c(linked_fate, linked_progress, linked_hurt),
                  names_to = "Measures", 
@@ -14,10 +14,15 @@ corr_plot <- function(data){
                              "linked_fate" = "Linked fate",
                              "linked_progress" = "Linked progress",
                              "linked_hurt" = "Linked hurt")) %>%
-    ggplot(aes(x = Responses)) + 
-        geom_density() +  
-        labs(y = "Density") + 
-        facet_wrap(~Measures)
+    group_by(Measures) %>%
+    count(Responses) %>% 
+        ggplot(aes(x = factor(Responses), y = n)) + 
+        geom_col() +
+        labs(x = "Responses",
+             y = "Count") +
+        scale_x_discrete(breaks = c(-2, -1, 1, 2),
+                         labels = c("-2", "-1", "1", "2")) +
+        facet_wrap(~Measures) 
 }
 
 summarise_coeff <- function(data, group_var, var1, var2){
@@ -122,5 +127,5 @@ group_diff_in_means <- function(data, group_var, var1, var2){
 }
 
 ols <- function(data){
-  lm(difference ~ White + Black + Asian + Latinx + Male + Female + Democrat + Republican + for_born + edu_level, data = data)  
+  lm(difference ~ factor(race) + factor(race)*edu_level + factor(race)*income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)  
 }
