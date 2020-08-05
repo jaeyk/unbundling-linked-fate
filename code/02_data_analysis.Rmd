@@ -18,51 +18,50 @@ rm(list = ls())
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
-    tidyverse, # for the tidyverse framework
-    broom, # for tidying model objects  
-    ggpubr, # for arranging ggplots   
-    ggthemes, # for fancy ggplot themes
-    MKinfer, # for inferential statistics 
-    wBoot, # for bootstrapping methods 
-    plotrix, # for various plotting functions
-    PerformanceAnalytics, # for corr plots 
-    GGally, # for corr plots
-    patchwork, # for easy ggarrange
-    psych, # for psychometric analysis
-    irr, # for reliability test
-    rel, # for bootstrapping kappa
-    strapgod, # for bootstrapping
-    grf, # for generalized random forest framework
-    here # for self-contained projects
+  tidyverse, # for the tidyverse framework
+  broom, # for tidying model objects
+  ggpubr, # for arranging ggplots
+  ggthemes, # for fancy ggplot themes
+  MKinfer, # for inferential statistics
+  wBoot, # for bootstrapping methods
+  plotrix, # for various plotting functions
+  PerformanceAnalytics, # for corr plots
+  GGally, # for corr plots
+  patchwork, # for easy ggarrange
+  psych, # for psychometric analysis
+  irr, # for reliability test
+  rel, # for bootstrapping kappa
+  strapgod, # for bootstrapping
+  grf, # for generalized random forest framework
+  here # for self-contained projects
 )
 
 devtools::install_github("jaeyk/makereproducible",
-        dependencies = TRUE)
+  dependencies = TRUE
+)
 
 library(makereproducible)
 
-# Custom functions 
+# Custom functions
 source(here("functions", "summarize_survey.r"))
 
-# for publication-friendly theme 
+# for publication-friendly theme
 theme_set(theme_pubr())
-
 ```
 
 ### 1. Importing data 
 
 ```{r}
 
-# Importing data 
+# Importing data
 df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv"))
 
 # Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
 
 # Using only complete cases
-df <- df[complete.cases(df),] %>% 
-    as.data.frame() 
-
+df <- df[complete.cases(df), ] %>%
+  as.data.frame()
 ```
 
 ### 2. Descriptive analysis 
@@ -72,27 +71,29 @@ df <- df[complete.cases(df),] %>%
 ```{r}
 
 summary_stat <- bind_rows(
-    mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
-    mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
-    mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt"))
-
+  mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
+  mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
+  mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt")
+)
 ```
 
 #### 2.2. Visualizing the results 
 
 ```{r}
 
-summary_stat %>%  
-    ggplot(aes(x = fct_reorder(race, mean), y = mean, 
-               ymax = mean + se, 
-               ymin = mean - se, col = Type)) +
-      geom_pointrange() +
-      coord_flip() +
-      theme_base() +
-      geom_hline(yintercept = 0, linetype = "dashed") +
-      labs(x = "Race", y = "Mean",
-           title = "Average responses by racial groups") +
-  theme_pubr()
+summary_stat %>%
+  ggplot(aes(
+    x = fct_reorder(race, mean), y = mean,
+    ymax = mean + se,
+    ymin = mean - se, col = Type
+  )) +
+  geom_pointrange() +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    x = "Race", y = "Mean",
+    title = "Average responses by racial groups"
+  )
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
 ```
@@ -105,145 +106,155 @@ Note that all tests are two-sided.
 ```{r}
 
 table(df$race)
-
 ```
 
 #### 3.1. Bar plots
 
 ```{r}
 
-# Apply to each data and bind them 
+# Apply to each data and bind them
 
-p1 <- bar_plot(df %>% 
-                  filter(race == "Asians")) +    
-                  ggtitle("Asians")
+p1 <- bar_plot(df %>%
+  filter(race == "Asians")) +
+  ggtitle("Asians")
 
-p2 <- bar_plot(df %>% 
-                  filter(race == "Blacks")) + 
-                  ggtitle("Blacks")
+p2 <- bar_plot(df %>%
+  filter(race == "Blacks")) +
+  ggtitle("Blacks")
 
-p3 <- bar_plot(df %>% 
-                  filter(race == "Whites")) + 
-                  ggtitle("Whites")
+p3 <- bar_plot(df %>%
+  filter(race == "Whites")) +
+  ggtitle("Whites")
 
-p4 <- bar_plot(df %>% 
-                  filter(race == "Latinx")) + 
-                  ggtitle("Latinx")
+p4 <- bar_plot(df %>%
+  filter(race == "Latinx")) +
+  ggtitle("Latinx")
 
 p1 + p4 + p3 + p2
 
-ggsave(here("outputs","bar_plot.png"), 
-       width = 10)
-
+ggsave(here("outputs", "bar_plot.png"),
+  width = 10
+)
 ```
 
 #### 3.2. Four correlation coefficients 
 
 ```{r}
 
-# Individual case analysis 
+# Individual case analysis
 
 # Fate - Progress
 fate_progress <- summarise_coeff(
-    df, race, linked_fate, linked_progress)
+  df, race, linked_fate, linked_progress
+)
 
-# Fate - Hurt 
+# Fate - Hurt
 fate_hurt <- summarise_coeff(
-    df, race, linked_fate, linked_hurt)
+  df, race, linked_fate, linked_hurt
+)
 
-# Progress - Hurt 
+# Progress - Hurt
 progress_hurt <- summarise_coeff(
-    df, race, linked_progress, linked_hurt)
+  df, race, linked_progress, linked_hurt
+)
 
-# Combining the results 
+# Combining the results
 cor_results <- bind_rows(
-    mutate(fate_progress, Type = "fate_progress"),
-    mutate(fate_hurt, Type = "fate_hurt"),
-    mutate(progress_hurt, Type = "progress_hurt")
-  )
+  mutate(fate_progress, Type = "fate_progress"),
+  mutate(fate_hurt, Type = "fate_hurt"),
+  mutate(progress_hurt, Type = "progress_hurt")
+)
 
 cor_results <- cor_results %>%
-    pivot_longer(
-        cols = c("Pearson", "Kendall", "Spearman"), 
-        names_to = "Test", 
-        values_to = "coeffs")
-
+  pivot_longer(
+    cols = c("Pearson", "Kendall", "Spearman"),
+    names_to = "Test",
+    values_to = "coeffs"
+  )
 ```
 
 #### 3.3. Visualizing the results  
 
 ```{r}
 cor_results %>%
-    mutate(coeffs = round(coeffs, 4)) %>% 
-    mutate(Type = recode(Type, 
-           'fate_hurt' = 'Fate <-> Hurt',
-           'fate_progress' = 'Fate <-> Progress',
-           'progress_hurt' = 'Progress <-> Hurt'
-           )) %>%
-    ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
-        geom_col(position = "dodge") +
-        facet_wrap(~race) +
-        coord_flip() + 
-        labs(x = "Race", y = "Correlation coefficients", 
-        title = "Correlation test resuts")
+  mutate(coeffs = round(coeffs, 4)) %>%
+  mutate(Type = recode(Type,
+    "fate_hurt" = "Fate <-> Hurt",
+    "fate_progress" = "Fate <-> Progress",
+    "progress_hurt" = "Progress <-> Hurt"
+  )) %>%
+  ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~race) +
+  coord_flip() +
+  labs(
+    x = "Race", y = "Correlation coefficients",
+    title = "Correlation test resuts"
+  )
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
-
 ```
 
 ### 4. Reliability test 
 
 ```{r}
 
-# Summarise 
+# Summarise
 rel_tests <- df %>%
-    group_by(race) %>%
-    nest() %>%
-    mutate(kappa = map(data, reliability_test), 
-           kappa_weight = map(data, reliability_weight_test),
-           kappa_boot_mean = map(data, reliability_boot_mean),
-           kappa_boot_ub = map(data, reliability_boot_ub),
-           kappa_boot_lb = map(data, reliability_boot_lb)
-           )
+  group_by(race) %>%
+  nest() %>%
+  mutate(
+    kappa = map(data, reliability_test),
+    kappa_weight = map(data, reliability_weight_test),
+    kappa_boot_mean = map(data, reliability_boot_mean),
+    kappa_boot_ub = map(data, reliability_boot_ub),
+    kappa_boot_lb = map(data, reliability_boot_lb)
+  )
 
-# Unnest 
+# Unnest
 rel_tests <- rel_tests %>%
-    unnest(c(kappa, kappa_weight, 
-             kappa_boot_mean, 
-             kappa_boot_ub, 
-             kappa_boot_lb))
-
+  unnest(c(
+    kappa, kappa_weight,
+    kappa_boot_mean,
+    kappa_boot_ub,
+    kappa_boot_lb
+  ))
 ```
 
 ```{r}
-# Kappa plot 
+# Kappa plot
 kappa_plot <- rel_tests %>%
-    ggplot(aes(x = race, y = kappa)) +
-        geom_point() +  
-        labs(title = "Reliability test",
-             x = "Race",
-             y = "Conger's Kappa") 
+  ggplot(aes(x = race, y = kappa)) +
+  geom_point() +
+  labs(
+    title = "Reliability test",
+    x = "Race",
+    y = "Conger's Kappa"
+  )
 
-# With quadratic weighting 
+# With quadratic weighting
 kappa_weight_plot <- rel_tests %>%
-    ggplot(aes(x = race, y = kappa_weight)) +
-        geom_point() +  
-        labs(title = "Reliability test (with quadratic weighting)",
-             x = "Race",
-             y = "Conger's Kappa") 
+  ggplot(aes(x = race, y = kappa_weight)) +
+  geom_point() +
+  labs(
+    title = "Reliability test (with quadratic weighting)",
+    x = "Race",
+    y = "Conger's Kappa"
+  )
 
-## With bootstrapping 
-kappa_boot_plot <- rel_tests %>%   
-    ggplot(aes(x = race, y = kappa_boot_mean, ymax = kappa_boot_ub, ymin = kappa_boot_lb)) +
-        geom_pointrange() +  
-        labs(title = "Reliability test (with bootstrapping)",
-             x = "Race",
-             y = "Conger's Kappa") 
+## With bootstrapping
+kappa_boot_plot <- rel_tests %>%
+  ggplot(aes(x = race, y = kappa_boot_mean, ymax = kappa_boot_ub, ymin = kappa_boot_lb)) +
+  geom_pointrange() +
+  labs(
+    title = "Reliability test (with bootstrapping)",
+    x = "Race",
+    y = "Conger's Kappa"
+  )
 
 kappa_plot / kappa_weight_plot / kappa_boot_plot
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png"), height = 8, width = 8)
-  
 ```
 
 ### 5. Difference-in-means analysis 
@@ -253,40 +264,48 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_test
 ```{r}
 
 diff_fate_progress <- group_diff_in_means(
-    df, race, linked_fate, linked_progress)
+  df, race, linked_fate, linked_progress
+)
 
 diff_fate_hurt <- group_diff_in_means(
-    df, race, linked_fate, linked_hurt)
+  df, race, linked_fate, linked_hurt
+)
 
-# Combining the results 
+# Combining the results
 
 diff_results <- bind_rows(
-    mutate(diff_fate_progress, 
-           Outcome = "Progress - Fate"),
-    mutate(diff_fate_hurt, 
-           Outcome = "Hurt - Fate")
-    )
-
+  mutate(diff_fate_progress,
+    Outcome = "Progress - Fate"
+  ),
+  mutate(diff_fate_hurt,
+    Outcome = "Hurt - Fate"
+  )
+)
 ```
 
 #### 5.2. Visualizing the results 
 
 ```{r}
 
-diff_results %>%  
-    ggplot(aes(x = fct_reorder(race, -diff), y = -diff, 
-           ymax = -diff + conf, 
-           ymin = -diff - conf)) +
-        geom_pointrange() +
-        labs(x = "Race", 
-             y = "Difference in means",
-             title = "Difference of means test results ") +
-        geom_hline(yintercept = 0, 
-                   linetype = "dashed") +
-        facet_wrap(~Outcome) 
+diff_results %>%
+  ggplot(aes(
+    x = fct_reorder(race, -diff), y = -diff,
+    ymax = -diff + conf,
+    ymin = -diff - conf
+  )) +
+  geom_pointrange() +
+  labs(
+    x = "Race",
+    y = "Difference in means",
+    title = "Difference of means test results "
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  facet_wrap(~Outcome)
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
-
 ```
 
 ### 6. Regression analysis 
@@ -295,29 +314,28 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_pl
 
 ```{r}
 
-# Create dummy variables to plug them into a regression + normalization 
+# Create dummy variables to plug them into a regression + normalization
 
 df <- df %>%
-    mutate(
-      
-           Gender = factor(ifelse(Gender %in% c(1, 2), Gender, NA)),
-           
-           Male = factor(ifelse(Gender == 1, 1, 0)),
-           
-           Female = factor(ifelse(Gender == 2, 1, 0)),
-           
-           Democrat = factor(ifelse(party_id == 1, 1, 0)),
-           
-           Republican = factor(ifelse(party_id == 2, 1, 0)),
-           
-           for_born = ifelse(for_born %in% c(1, 2), for_born, NA), 
-           
-           for_born = factor(ifelse(for_born == 2, 1, 0)),
-           
-           edu_level = scales::rescale(edu_level),
-           
-           income_level = scales::rescale(income_level)
-           )
+  mutate(
+    Gender = factor(ifelse(Gender %in% c(1, 2), Gender, NA)),
+
+    Male = factor(ifelse(Gender == 1, 1, 0)),
+
+    Female = factor(ifelse(Gender == 2, 1, 0)),
+
+    Democrat = factor(ifelse(party_id == 1, 1, 0)),
+
+    Republican = factor(ifelse(party_id == 2, 1, 0)),
+
+    for_born = ifelse(for_born %in% c(1, 2), for_born, NA),
+
+    for_born = factor(ifelse(for_born == 2, 1, 0)),
+
+    edu_level = scales::rescale(edu_level),
+
+    income_level = scales::rescale(income_level)
+  )
 
 df
 ```
@@ -326,17 +344,18 @@ df
 
 ```{r}
 
-df_binded <- df %>% 
-    # Row bind then pivot longer 
-    pivot_longer(cols = c("linked_fate","linked_progress","linked_hurt"),
-                 names_to = "DV",
-                 values_to = "difference")
+df_binded <- df %>%
+  # Row bind then pivot longer
+  pivot_longer(
+    cols = c("linked_fate", "linked_progress", "linked_hurt"),
+    names_to = "DV",
+    values_to = "difference"
+  )
 
 df_ols <- df_binded %>%
-    group_by(DV) %>%
-    nest() %>%
-    mutate(ols = map(data, ols))
-
+  group_by(DV) %>%
+  nest() %>%
+  mutate(ols = map(data, ols))
 ```
 
 #### 6.3. Visualization
@@ -344,11 +363,10 @@ df_ols <- df_binded %>%
 ```{r}
 
 df_tidied <- df_ols %>%
-    unnest(tidied = map(ols, ~tidy(., conf.int = TRUE)))
+  unnest(tidied = map(ols, ~ tidy(., conf.int = TRUE)))
 
 df_glanced <- df_ols %>%
-    unnest(glanced = map(ols, broom::glance)) 
-
+  unnest(glanced = map(ols, broom::glance))
 ```
 
 - Model fit 
@@ -356,35 +374,47 @@ df_glanced <- df_ols %>%
 ```{r}
 
 df_glanced <- df_glanced %>%
-    mutate(DV = recode(DV, 
-           'linked_fate' = 'Linked fate',
-           'linked_progress' = 'Linked progress',
-           "linked_hurt" = "Linked hurt"))
+  mutate(DV = recode(DV,
+    "linked_fate" = "Linked fate",
+    "linked_progress" = "Linked progress",
+    "linked_hurt" = "Linked hurt"
+  ))
 
 fit1 <- df_glanced %>%
-    ggplot(aes(x = fct_reorder(DV, r.squared), 
-               y = r.squared)) +
-        geom_point() +
-        coord_flip() +
-        labs(x = "", 
-             title = "R-squared") +
-        geom_hline(yintercept = 0, 
-                   linetype = "dashed") 
+  ggplot(aes(
+    x = fct_reorder(DV, r.squared),
+    y = r.squared
+  )) +
+  geom_point() +
+  coord_flip() +
+  labs(
+    x = "",
+    title = "R-squared"
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  )
 
 fit2 <- df_glanced %>%
-    ggplot(aes(x = fct_reorder(DV, r.squared), 
-               y = adj.r.squared)) +
-        geom_point() +
-        coord_flip() +
-        labs(x = "", 
-             title = "Adjusted R-squared") +
-        geom_hline(yintercept = 0, 
-                   linetype = "dashed") 
+  ggplot(aes(
+    x = fct_reorder(DV, r.squared),
+    y = adj.r.squared
+  )) +
+  geom_point() +
+  coord_flip() +
+  labs(
+    x = "",
+    title = "Adjusted R-squared"
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  )
 
-fit1 / fit2 
+fit1 / fit2
 
 ggsave(here("outputs", "ols_fits.png"), height = 10)
-
 ```
 
 - Coefficients 
@@ -392,39 +422,42 @@ ggsave(here("outputs", "ols_fits.png"), height = 10)
 ```{r}
 
 df_tidied <- df_tidied %>%
-    mutate(DV = recode(DV, 
-           'linked_fate' = 'Linked fate',
-           'linked_progress' = 'Linked progress',
-           "linked_hurt" = "Linked hurt")) %>%
-    filter(!grepl("cept", term)) %>%
-    mutate(term = term %>%   
-            str_replace_all("\\(|\\)", "") %>% # remove ( )
-            str_replace_all("factorrace", "") %>%
-            str_replace_all("income_level", "Income") %>%
-            str_replace_all("edu_level", "Education") %>% 
-            str_replace_all("for_born", "Foreign born") %>%
-            str_replace_all("1", "")) %>%
-    mutate(DV = recode(DV, 
-           'fate_progress' = 'Progress - Fate',
-           'fate_hurt' = 'Hurt - Fate')) 
-
+  mutate(DV = recode(DV,
+    "linked_fate" = "Linked fate",
+    "linked_progress" = "Linked progress",
+    "linked_hurt" = "Linked hurt"
+  )) %>%
+  filter(!grepl("cept", term)) %>%
+  mutate(term = term %>%
+    str_replace_all("\\(|\\)", "") %>% # remove ( )
+    str_replace_all("factorrace", "") %>%
+    str_replace_all("income_level", "Income") %>%
+    str_replace_all("edu_level", "Education") %>%
+    str_replace_all("for_born", "Foreign born") %>%
+    str_replace_all("1", "")) %>%
+  mutate(DV = recode(DV,
+    "fate_progress" = "Progress - Fate",
+    "fate_hurt" = "Hurt - Fate"
+  ))
 ```
 
 ```{r}
 
-df_tidied %>% 
-    ggplot(aes(x = fct_reorder(term, estimate), 
-               y = estimate, 
-               ymax = conf.high, 
-               ymin = conf.low)) +
-        geom_pointrange() +
-        coord_flip() +
-        labs(x = "", y = "OLS Estimate") +
-        facet_grid(~DV) +
-        geom_hline(yintercept = 0, 
-                   linetype = "dashed") 
+df_tidied %>%
+  ggplot(aes(
+    x = fct_reorder(term, estimate),
+    y = estimate,
+    ymax = conf.high,
+    ymin = conf.low
+  )) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(x = "", y = "OLS Estimate") +
+  facet_grid(~DV) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  )
 
 ggsave(here("outputs", "ols_coeffs.png"))
-
 ```
-
