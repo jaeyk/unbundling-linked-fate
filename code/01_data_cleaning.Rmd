@@ -11,19 +11,16 @@ html_document:
 
 ```{r}
 
-# Clean up the environment
-rm(list = ls())
-
 # Import libraries 
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
-    tidyverse, # for the tidyverse framework
-    naniar, # for missing data
-    mice, # for imputation
-    ggpubr, # for arranging ggplots   
-    ggthemes, # for fancy ggplot themes
-    here # for self-contained projects
+    tidyverse, # the tidyverse framework
+    naniar, # missing data
+    mice, # imputation
+    ggpubr, # arranging ggplots   
+    ggthemes, # fancy ggplot themes
+    here # self-contained projects
 )
 
 devtools::install_github("jaeyk/makereproducible",
@@ -31,7 +28,20 @@ devtools::install_github("jaeyk/makereproducible",
         
 library(makereproducible)
 
-source(here("functions", "clean_survey.r"))
+
+# Import custom functions 
+script_list <- list.files(paste0(here::here(), "/functions"),
+  pattern = "*.r|*.R",
+  full.names = TRUE
+)
+
+for (i in 1:length(script_list))
+{
+  source(script_list[[i]])
+}
+
+# for publication-friendly theme
+theme_set(theme_pubr())
 
 ```
 

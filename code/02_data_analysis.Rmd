@@ -11,29 +11,26 @@ html_document:
 
 ```{r}
 
-# Clean up the environment
-rm(list = ls())
-
-# Import libraries (adapted from this link: https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them)
+# Import libs 
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
-  tidyverse, # for the tidyverse framework
-  broom, # for tidying model objects
-  ggpubr, # for arranging ggplots
-  ggthemes, # for fancy ggplot themes
-  MKinfer, # for inferential statistics
-  wBoot, # for bootstrapping methods
-  plotrix, # for various plotting functions
-  PerformanceAnalytics, # for corr plots
-  GGally, # for corr plots
-  patchwork, # for easy ggarrange
-  psych, # for psychometric analysis
-  irr, # for reliability test
-  rel, # for bootstrapping kappa
-  strapgod, # for bootstrapping
-  grf, # for generalized random forest framework
-  here # for self-contained projects
+  tidyverse, # the tidyverse framework
+  broom, # tidying model objects
+  ggpubr, # arranging ggplots
+  ggthemes, # fancy ggplot themes
+  MKinfer, # inferential statistics
+  wBoot, # bootstrapping methods
+  plotrix, # various plotting functions
+  PerformanceAnalytics, # corr plots
+  GGally, # corr plots
+  patchwork, # easy ggarrange
+  psych, # psychometric analysis
+  irr, # reliability test
+  rel, # bootstrapping kappa
+  strapgod, # bootstrapping
+  grf, # generalized random forest framework
+  here # self-contained projects
 )
 
 devtools::install_github("jaeyk/makereproducible",
@@ -42,8 +39,16 @@ devtools::install_github("jaeyk/makereproducible",
 
 library(makereproducible)
 
-# Custom functions
-source(here("functions", "summarize_survey.r"))
+# Import custom functions 
+script_list <- list.files(paste0(here::here(), "/functions"),
+  pattern = "*.r|*.R",
+  full.names = TRUE
+)
+
+for (i in 1:length(script_list))
+{
+  source(script_list[[i]])
+}
 
 # for publication-friendly theme
 theme_set(theme_pubr())
@@ -205,19 +210,12 @@ rel_tests <- df %>%
   nest() %>%
   mutate(
     kappa = map(data, reliability_test),
-    kappa_weight = map(data, reliability_weight_test),
-    kappa_boot_mean = map(data, reliability_boot_mean),
-    kappa_boot_ub = map(data, reliability_boot_ub),
-    kappa_boot_lb = map(data, reliability_boot_lb)
-  )
+    kappa_weight = map(data, reliability_weight_test))
 
 # Unnest
 rel_tests <- rel_tests %>%
   unnest(c(
-    kappa, kappa_weight,
-    kappa_boot_mean,
-    kappa_boot_ub,
-    kappa_boot_lb
+    kappa, kappa_weight
   ))
 ```
 
@@ -230,7 +228,8 @@ kappa_plot <- rel_tests %>%
     title = "Reliability test",
     x = "Race",
     y = "Conger's Kappa"
-  )
+  ) +
+  ylim(c(0,0.5))
 
 # With quadratic weighting
 kappa_weight_plot <- rel_tests %>%
@@ -240,19 +239,10 @@ kappa_weight_plot <- rel_tests %>%
     title = "Reliability test (with quadratic weighting)",
     x = "Race",
     y = "Conger's Kappa"
-  )
+  ) +
+  ylim(c(0,0.5))
 
-## With bootstrapping
-kappa_boot_plot <- rel_tests %>%
-  ggplot(aes(x = race, y = kappa_boot_mean, ymax = kappa_boot_ub, ymin = kappa_boot_lb)) +
-  geom_pointrange() +
-  labs(
-    title = "Reliability test (with bootstrapping)",
-    x = "Race",
-    y = "Conger's Kappa"
-  )
-
-kappa_plot / kappa_weight_plot / kappa_boot_plot
+kappa_plot / kappa_weight_plot 
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png"), height = 8, width = 8)
 ```
@@ -434,7 +424,10 @@ df_tidied <- df_tidied %>%
     str_replace_all("income_level", "Income") %>%
     str_replace_all("edu_level", "Education") %>%
     str_replace_all("for_born", "Foreign born") %>%
-    str_replace_all("1", "")) %>%
+    str_replace_all("1", "") %>%
+    str_replace_all("Blacks", "Black") %>%
+    str_replace_all("Asians", "Asian") %>%
+    str_replace_all("Whites", "White")) %>%
   mutate(DV = recode(DV,
     "fate_progress" = "Progress - Fate",
     "fate_hurt" = "Hurt - Fate"

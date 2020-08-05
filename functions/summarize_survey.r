@@ -16,21 +16,20 @@ bar_plot <- function(data) {
     ) %>%
     mutate(Responses = as.character(Responses)) %>%
     mutate(Responses = recode(Responses,
-      "-2" = "Strongly negative",
-      "-1" = "Somewhat negative",
-      "1" = "Somewhat positive",
-      "2" = "Strongly positive"
+      "4" = "Strongly positive",
+      "3" = "Somewhat positive",
+      "2" = "Somewhat negative",
+      "1" = "Strongly negative"
     )) %>%
     mutate(Measures = recode(Measures,
       "linked_fate" = "Linked fate",
       "linked_progress" = "Linked progress",
       "linked_hurt" = "Linked hurt"
     )) %>%
-    mutate(Measures = factor(Measures)) %>%
-    mutate(Measures = fct_relevel(Measures, c("Strongly negative", "Somewhat negative", "Somewhat positive", "Strongly negative"))) %>%
     group_by(Measures) %>%
     count(Responses) %>%
-    ggplot(aes(x = factor(Responses), y = n)) +
+    mutate(Responses = factor(Responses, levels = c("Strongly negative", "Somewhat negative", "Somewhat positive", "Strongly positive"))) %>%  
+    ggplot(aes(x = Responses, y = n)) +
     geom_col() +
     labs(
       x = "Responses",

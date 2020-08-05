@@ -44,7 +44,7 @@ In the rest of the document, I describe how I have **cleaned**, **analyzed**, an
 
 ### Data cleaning \[[Code](https://github.com/jaeyk/validating-two-linked-fates/blob/master/code/01_data_cleaning.Rmd)]
 
-- I recoded linked fate-related questions so that all positive responses became positive numbers (2 was agree strongly, 1 was agree somewhat), and all negative responses became negative numbers (-1 was disagree somewhat, - 2 was disagree strongly). This scale made it easier to interpret the results.
+- I recoded linked fate-related questions as follows: `4-strongly positive, 3-somewhat positive, 2- somewhat negative, 1-strongly negative`. This scale made it easier to interpret the results.
 - I identified missing responses from linked fate questions, which represented 5–6% of the responses, and inputted them using multiple additions (the `mice` package in R).
 - I only included participants who identified as white, African American, Latinx, and Asian American. Consequently, I dropped 150 participants (3% of the total number of participants) who were non-identified using these measures.
 
@@ -83,7 +83,7 @@ Figure 3. Correlation tests results
 
 The other necessary step was checking reliability. Perhaps, the differences in responses in these three linked fate questions arose by chance. The questions were all related and their wording was similar. Thus, this was a legitimate concern. I addressed this problem by calculating Conger's kappa. Conger's kappa is a generalized version of Cohen's kappa and shows whether the raters have a perfect agreement (=1) or if their agreement is entirely a fluke (=0). This technique is often used to test the reliability of raters. Here, I employed this method to determine whether similarities in the responses of these three linked fate questions occurred by chance.
 
-In Figure 4, the y-axis indicates Conger's kappa statistic, and the x-axis plots different racial groups. The top panel shows that the reliability score for whites is far lower than that of other groups. The middle panel shows that weighting makes no difference. One concern was that the number of white survey participants was far greater than that of other groups. To account for this imbalance in group size, I also bootstrapped kappa and calculated the confidence intervals. The bottom panel shows that the difference disappears after carrying out these additional calculations. All kappa statistics are between 0.185 and 0.190.
+In Figure 4, the y-axis indicates Conger's kappa statistic, and the x-axis plots different racial groups. The top panel shows that the reliability score for whites is far lower than that of other groups. The bottom panel shows that weighting makes no difference. All kappa statistics are between 0.36 and 0.474.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/reliability_tests_plot.png)
 Figure 4. Correlation tests results
