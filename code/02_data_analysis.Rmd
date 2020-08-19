@@ -94,8 +94,8 @@ summary_stat <- bind_rows(
 summary_stat %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
-    ymax = mean + se,
-    ymin = mean - se, 
+    ymax = mean + 2*se,
+    ymin = mean - 2*se, 
     col = Type, 
     shape = Type
   )) +
@@ -461,7 +461,7 @@ df_tidied %>%
     yintercept = 0,
     linetype = "dashed"
   ) +
-  facet_wrap(~race)
+  facet_grid(DV~race)
 
 ggsave(here("outputs", "ols_coeffs.png"))
 ```
