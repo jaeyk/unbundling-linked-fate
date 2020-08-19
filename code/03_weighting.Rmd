@@ -1,0 +1,148 @@
+---
+title: "Data analysis"
+author: "Jae Yeon Kim"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: united
+    toc: yes
+---
+
+# Setup 
+
+```{r}
+
+# Import libs 
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  tidyverse, # the tidyverse framework
+  broom, # tidying model objects
+  ggpubr, # arranging ggplots
+  ggthemes, # fancy ggplot themes
+  MKinfer, # inferential statistics
+  wBoot, # bootstrapping methods
+  plotrix, # various plotting functions
+  PerformanceAnalytics, # corr plots
+  GGally, # corr plots
+  patchwork, # easy ggarrange
+  psych, # psychometric analysis
+  srvyr, # applying dplyr syntax to the survey package 
+  irr, # reliability test
+  rel, # bootstrapping kappa
+  strapgod, # bootstrapping
+  grf, # generalized random forest framework
+  here # self-contained projects
+)
+
+devtools::install_github("jaeyk/makereproducible",
+  dependencies = TRUE
+)
+
+library(makereproducible)
+
+# Import custom functions 
+script_list <- list.files(paste0(here::here(), "/functions"),
+  pattern = "*.r|*.R",
+  full.names = TRUE
+)
+
+for (i in 1:length(script_list))
+{
+  source(script_list[[i]])
+}
+
+# for publication-friendly theme
+theme_set(theme_pubr())
+```
+
+# Import data 
+
+```{r}
+
+# Importing data
+df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey.csv"))
+
+# Excluding other respondents (too small to calculate CIs)
+df <- subset(df, race != "Other")
+
+# Using only complete cases
+df <- df[complete.cases(df), ] %>%
+  as.data.frame()
+
+# Apply weights 
+df_weights <- df %>% as_survey(weights = WEIGHT) 
+
+```
+
+# Descriptive analysis 
+
+## Mean and SEs
+
+```{r}
+
+summary_stat <- bind_rows(
+  mutate(mean_group_key_weight(df_weights, race, linked_fate), Type = "Linked fate"),
+  mutate(mean_group_key_weight(df_weights, race, linked_progress), Type = "Linked progress"),
+  mutate(mean_group_key_weight(df_weights, race, linked_hurt), Type = "Linked hurt")
+)
+
+```
+
+## Visualize results 
+
+```{r}
+
+summary_stat %>%
+  ggplot(aes(
+    x = fct_reorder(race, mean), y = mean,
+    ymax = mean + mean_se,
+    ymin = mean - mean_se, 
+    col = Type, 
+    shape = Type
+  )) +
+  geom_pointrange() +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    x = "Race", y = "Mean",
+    title = "Average responses by racial groups"
+  ) +
+  ylim(c(0,4))
+
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_weights.png"))
+```
+
+  
+# Correlation analysis
+
+## Bar plots
+
+```{r}
+
+# Apply to each data and bind them
+
+p1 <- bar_plot_weights(df %>%
+  filter(race == "Asians")) +
+  ggtitle("Asians")
+
+p2 <- bar_plot_weights(df %>%
+  filter(race == "Blacks")) +
+  ggtitle("Blacks")
+
+p3 <- bar_plot_weights(df %>%
+  filter(race == "Whites")) +
+  ggtitle("Whites")
+
+p4 <- bar_plot_weights(df %>%
+  filter(race == "Latinx")) +
+  ggtitle("Latinx")
+
+p1 + p4 + p3 + p2
+
+ggsave(here("outputs", "bar_plot_weights.png"),
+  width = 10
+)
+```
+

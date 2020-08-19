@@ -80,6 +80,8 @@ df <- df %>%
 
 ```{r}
 vis_miss(df)
+ggsave(here("outputs", "missing_vars.png"),
+       width = 12)
 ```
 
 ### 4. Multiple imputations 
@@ -152,6 +154,6 @@ df$race <- df$race %>%
 ```
 
 ```{r}
-write_csv(df, make_here("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv"))
+write_csv(df, make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey.csv"))
 ```
 

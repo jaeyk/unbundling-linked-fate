@@ -1,13 +1,15 @@
 ---
-title: "Data cleaning"
+title: "Data analysis with weighting"
 author: "Jae Yeon Kim"
 output:
-html_document: 
-  toc: true
-  theme: united
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: united
+    toc: yes
 ---
 
-## 0. Setup 
+# Setup 
 
 ```{r}
 
@@ -26,6 +28,7 @@ pacman::p_load(
   GGally, # corr plots
   patchwork, # easy ggarrange
   psych, # psychometric analysis
+  srvyr, # applying dplyr syntax to the survey package 
   irr, # reliability test
   rel, # bootstrapping kappa
   strapgod, # bootstrapping
@@ -54,12 +57,12 @@ for (i in 1:length(script_list))
 theme_set(theme_pubr())
 ```
 
-### 1. Importing data 
+# Import data 
 
 ```{r}
 
 # Importing data
-df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/processed_survey.csv"))
+df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey.csv"))
 
 # Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
@@ -67,11 +70,12 @@ df <- subset(df, race != "Other")
 # Using only complete cases
 df <- df[complete.cases(df), ] %>%
   as.data.frame()
+
 ```
 
-### 2. Descriptive analysis 
+# Descriptive analysis 
 
-#### 2.1. Mean and SEs
+## Mean and SEs
 
 ```{r}
 
@@ -80,9 +84,10 @@ summary_stat <- bind_rows(
   mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
   mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt")
 )
+
 ```
 
-#### 2.2. Visualizing the results 
+## Visualizing the results 
 
 ```{r}
 
@@ -90,7 +95,9 @@ summary_stat %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
     ymax = mean + se,
-    ymin = mean - se, col = Type
+    ymin = mean - se, 
+    col = Type, 
+    shape = Type
   )) +
   geom_pointrange() +
   coord_flip() +
@@ -98,13 +105,14 @@ summary_stat %>%
   labs(
     x = "Race", y = "Mean",
     title = "Average responses by racial groups"
-  )
+  ) +
+  ylim(c(0,4))
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
 ```
 
   
-### 3. Correlation analysis
+# Correlation analysis
 
 Note that all tests are two-sided.
 
@@ -113,7 +121,7 @@ Note that all tests are two-sided.
 table(df$race)
 ```
 
-#### 3.1. Bar plots
+ 3.1. Bar plots
 
 ```{r}
 
@@ -142,7 +150,7 @@ ggsave(here("outputs", "bar_plot.png"),
 )
 ```
 
-#### 3.2. Four correlation coefficients 
+## Four correlation coefficients 
 
 ```{r}
 
@@ -178,7 +186,7 @@ cor_results <- cor_results %>%
   )
 ```
 
-#### 3.3. Visualizing the results  
+## Visualizing the results  
 
 ```{r}
 cor_results %>%
@@ -200,7 +208,7 @@ cor_results %>%
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
 ```
 
-### 4. Reliability test 
+# Reliability test 
 
 ```{r}
 
@@ -247,9 +255,9 @@ kappa_plot / kappa_weight_plot
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png"), height = 8, width = 8)
 ```
 
-### 5. Difference-in-means analysis 
+# Difference-in-means analysis 
 
-#### 5.1. Difference-in-means tests (T-tests)
+## Difference-in-means tests (T-tests)
 
 ```{r}
 
@@ -273,7 +281,7 @@ diff_results <- bind_rows(
 )
 ```
 
-#### 5.2. Visualizing the results 
+## Visualizing the results 
 
 ```{r}
 
@@ -298,9 +306,9 @@ diff_results %>%
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
 ```
 
-### 6. Regression analysis 
+# Regression analysis 
 
-#### 6.1. Prepapring the data for modeling 
+## Prepapring the data for modeling 
 
 ```{r}
 
@@ -327,10 +335,9 @@ df <- df %>%
     income_level = scales::rescale(income_level)
   )
 
-df
 ```
 
-#### 6.2. OLS 
+## OLS 
 
 ```{r}
 
@@ -343,12 +350,13 @@ df_binded <- df %>%
   )
 
 df_ols <- df_binded %>%
-  group_by(DV) %>%
+  group_by(DV, race) %>%
   nest() %>%
   mutate(ols = map(data, ols))
+
 ```
 
-#### 6.3. Visualization
+## Visualization
 
 ```{r}
 
@@ -384,7 +392,8 @@ fit1 <- df_glanced %>%
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  )
+  ) + 
+  facet_wrap(~race)
 
 fit2 <- df_glanced %>%
   ggplot(aes(
@@ -400,7 +409,8 @@ fit2 <- df_glanced %>%
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  )
+  ) + 
+  facet_wrap(~race)
 
 fit1 / fit2
 
@@ -450,7 +460,8 @@ df_tidied %>%
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  )
+  ) +
+  facet_wrap(~race)
 
 ggsave(here("outputs", "ols_coeffs.png"))
 ```

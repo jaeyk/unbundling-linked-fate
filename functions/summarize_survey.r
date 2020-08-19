@@ -7,6 +7,14 @@ mean_group_key <- function(data, group_var, key_var) {
     )
 }
 
+mean_group_key_weight <- function(data, group_var, key_var) {
+  data %>%
+    group_by({{ group_var }}) %>%
+    summarise(
+      mean = survey_mean({{ key_var }})
+    )
+}
+
 bar_plot <- function(data) {
   data %>%
     pivot_longer(
@@ -16,10 +24,10 @@ bar_plot <- function(data) {
     ) %>%
     mutate(Responses = as.character(Responses)) %>%
     mutate(Responses = recode(Responses,
-      "4" = "Strongly positive",
-      "3" = "Somewhat positive",
-      "2" = "Somewhat negative",
-      "1" = "Strongly negative"
+      "4" = "Strongly agree",
+      "3" = "Somewhat agree",
+      "2" = "Somewhat disagree",
+      "1" = "Strongly disagree"
     )) %>%
     mutate(Measures = recode(Measures,
       "linked_fate" = "Linked fate",
@@ -28,7 +36,7 @@ bar_plot <- function(data) {
     )) %>%
     group_by(Measures) %>%
     count(Responses) %>%
-    mutate(Responses = factor(Responses, levels = c("Strongly negative", "Somewhat negative", "Somewhat positive", "Strongly positive"))) %>%  
+    mutate(Responses = factor(Responses, levels = c("Strongly disagree", "Somewhat disagree", "Somewhat agree", "Strongly agree"))) %>%  
     ggplot(aes(x = Responses, y = n)) +
     geom_col() +
     labs(
@@ -38,6 +46,40 @@ bar_plot <- function(data) {
     facet_wrap(~Measures) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
     coord_flip()
+}
+
+bar_plot_weights <- function(data) {
+  df %>%
+    pivot_longer(
+      cols = c(linked_fate, linked_progress, linked_hurt),
+      names_to = "Measures",
+      values_to = "Responses"
+    ) %>%
+    mutate(Responses = as.character(Responses)) %>%
+    mutate(Responses = recode(Responses,
+                              "4" = "Strongly agree",
+                              "3" = "Somewhat agree",
+                              "2" = "Somewhat disagree",
+                              "1" = "Strongly disagree"
+    )) %>%
+    mutate(Measures = recode(Measures,
+                             "linked_fate" = "Linked fate",
+                             "linked_progress" = "Linked progress",
+                             "linked_hurt" = "Linked hurt"
+    )) %>%
+    as_survey_design(weights = WEIGHT) %>%
+    group_by(Measures) %>%
+    survey_count(Responses) %>%
+    mutate(Responses = factor(Responses, levels = c("Strongly disagree", "Somewhat disagree", "Somewhat agree", "Strongly agree"))) %>%
+    ggplot(aes(x = Responses, y = n, ymax = n + 2*n_se, ymin = n - 2*n_se)) +
+      geom_col() +
+      labs(
+        x = "Responses",
+        y = "Count"
+      ) +
+      facet_wrap(~Measures) +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+      coord_flip()
 }
 
 summarise_coeff <- function(data, group_var, var1, var2) {
@@ -143,5 +185,5 @@ group_diff_in_means <- function(data, group_var, var1, var2) {
 }
 
 ols <- function(data) {
-  lm(difference ~ factor(race) + factor(race) * edu_level + factor(race) * income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+  lm(difference ~ edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
 }
