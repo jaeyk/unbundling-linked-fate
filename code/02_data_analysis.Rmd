@@ -1,5 +1,5 @@
 ---
-title: "Data analysis with weighting"
+title: "Data analysis"
 author: "Jae Yeon Kim"
 output:
   pdf_document:

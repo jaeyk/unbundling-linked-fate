@@ -49,7 +49,7 @@ bar_plot <- function(data) {
 }
 
 bar_plot_weights <- function(data) {
-  df %>%
+  data %>%
     pivot_longer(
       cols = c(linked_fate, linked_progress, linked_hurt),
       names_to = "Measures",

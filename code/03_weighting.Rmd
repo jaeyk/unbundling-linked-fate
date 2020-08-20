@@ -82,7 +82,15 @@ df_weights <- df %>% as_survey(weights = WEIGHT)
 
 ```{r}
 
+# Not weighted
 summary_stat <- bind_rows(
+  mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
+  mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
+  mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt")
+)
+
+# Weighted
+summary_stat_weights <- bind_rows(
   mutate(mean_group_key_weight(df_weights, race, linked_fate), Type = "Linked fate"),
   mutate(mean_group_key_weight(df_weights, race, linked_progress), Type = "Linked progress"),
   mutate(mean_group_key_weight(df_weights, race, linked_hurt), Type = "Linked hurt")
@@ -94,11 +102,12 @@ summary_stat <- bind_rows(
 
 ```{r}
 
-summary_stat %>%
+# Not weighted 
+nonweighted_plot <- summary_stat %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
-    ymax = mean + mean_se,
-    ymin = mean - mean_se, 
+    ymax = mean + se,
+    ymin = mean - se, 
     col = Type, 
     shape = Type
   )) +
@@ -111,6 +120,26 @@ summary_stat %>%
   ) +
   ylim(c(0,4))
 
+# Weighted
+weighted_plot <- summary_stat_weights %>%
+  ggplot(aes(
+    x = fct_reorder(race, mean), y = mean,
+    ymax = mean + mean_se,
+    ymin = mean - mean_se, 
+    col = Type, 
+    shape = Type
+  )) +
+  geom_pointrange() +
+  coord_flip() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    x = "Race", y = "Mean",
+    title = "Average responses by racial groups (weighted)"
+  ) +
+  ylim(c(0,4))
+
+nonweighted_plot / weighted_plot
+
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_weights.png"))
 ```
 
@@ -121,28 +150,45 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat
 
 ```{r}
 
-# Apply to each data and bind them
+# Not weighted 
 
-p1 <- bar_plot_weights(df %>%
+n1 <- bar_plot(df %>%
   filter(race == "Asians")) +
   ggtitle("Asians")
 
-p2 <- bar_plot_weights(df %>%
+n2 <- bar_plot(df %>%
   filter(race == "Blacks")) +
   ggtitle("Blacks")
 
-p3 <- bar_plot_weights(df %>%
+n3 <- bar_plot(df %>%
   filter(race == "Whites")) +
   ggtitle("Whites")
 
-p4 <- bar_plot_weights(df %>%
+n4 <- bar_plot(df %>%
   filter(race == "Latinx")) +
   ggtitle("Latinx")
 
-p1 + p4 + p3 + p2
+# Weighted 
+
+p1 <- bar_plot_weights(df %>%
+  filter(race == "Asians")) +
+  ggtitle("Asians (weighted)")
+
+p2 <- bar_plot_weights(df %>%
+  filter(race == "Blacks")) +
+  ggtitle("Blacks (weighted)")
+
+p3 <- bar_plot_weights(df %>%
+  filter(race == "Whites")) +
+  ggtitle("Whites (weighted)")
+
+p4 <- bar_plot_weights(df %>%
+  filter(race == "Latinx")) +
+  ggtitle("Latinx (weighted)")
+
+(n1 + p1 + n4 + p4) / (n3 + p3 + n2 + p2)
 
 ggsave(here("outputs", "bar_plot_weights.png"),
-  width = 10
+  width = 10, height = 10
 )
 ```
-
