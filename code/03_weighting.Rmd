@@ -106,8 +106,8 @@ summary_stat_weights <- bind_rows(
 nonweighted_plot <- summary_stat %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
-    ymax = mean + se,
-    ymin = mean - se, 
+    ymax = mean + 2*se,
+    ymin = mean - 2*se, 
     col = Type, 
     shape = Type
   )) +
@@ -124,8 +124,8 @@ nonweighted_plot <- summary_stat %>%
 weighted_plot <- summary_stat_weights %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
-    ymax = mean + mean_se,
-    ymin = mean - mean_se, 
+    ymax = mean + 2*mean_se,
+    ymin = mean - 2*mean_se, 
     col = Type, 
     shape = Type
   )) +

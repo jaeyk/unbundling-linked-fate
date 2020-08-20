@@ -55,7 +55,7 @@ In the rest of the document, I describe how I have **cleaned**, **analyzed**, an
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Mean and Standard Errors
 
-In Figure 1, the x-axis indicates the average score of responses to linked fate-related questions. The y-axis charts different racial groups. The mean describes the central tendency of the responses. The limitation is that it does not show how these data points are spread. For that reason, I also included the standard errors, which are indicated by the error bars.
+In Figure 1, the x-axis indicates the average score of responses to linked fate-related questions. The y-axis charts different racial groups. The mean describes the central tendency of the responses. The limitation is that it does not show how these data points are spread. For that reason, I also included the standard errors, which are indicated by the error bars. One side of the error bar indicates two standard errors. 
 
 Figure 1 clearly demonstrates how the use of a different measure for linked fate yields a different level of response. Overall, the standard linked fate question drew the strongest expressed support for linked fate. On average, linked progress scored higher than linked hurt across all racial groups, including African Americans. These results do not necessarily mean that Dawson's theory is wrong because the data also provides evidence for the presence of linked hurt. However, the theory has failed to include the importance of linked progress mechanisms and its prevalence.
 

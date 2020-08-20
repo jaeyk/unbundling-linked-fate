@@ -27,6 +27,7 @@ pacman::p_load(
   PerformanceAnalytics, # corr plots
   GGally, # corr plots
   patchwork, # easy ggarrange
+  coefficientalpha, # robust coefficient alpha and omega 
   psych, # psychometric analysis
   srvyr, # applying dplyr syntax to the survey package 
   irr, # reliability test
@@ -210,7 +211,19 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.
 
 # Reliability test 
 
+The result from Tau equivalence test:
+
+The robust F statistic is  67.467 
+with a p-value  0 
+
+The null hypothesis (the same true score for all items) is rejected. 
+
 ```{r}
+
+# Tau equivalence test 
+
+tau_result <- tau.test(df %>% dplyr::select(contains("linked")), varphi = 0.1)
+
 
 # Summarise
 rel_tests <- df %>%
