@@ -13,7 +13,7 @@ output:
 
 ```{r}
 
-# Import libs 
+# Import libs
 
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
@@ -27,14 +27,19 @@ pacman::p_load(
   PerformanceAnalytics, # corr plots
   GGally, # corr plots
   patchwork, # easy ggarrange
-  coefficientalpha, # robust coefficient alpha and omega 
+  correlation, # correlation analysis
+  effectsize, # effect size
+  coefficientalpha, # robust coefficient alpha and omega
   psych, # psychometric analysis
-  srvyr, # applying dplyr syntax to the survey package 
+  srvyr, # applying dplyr syntax to the survey package
   irr, # reliability test
   rel, # bootstrapping kappa
   strapgod, # bootstrapping
   grf, # generalized random forest framework
-  here # self-contained projects
+  kableExtra, # tables
+  ggraph, # Gaussian Graphical Models
+  here, # self-contained projects
+  rptR # repeatability test 
 )
 
 devtools::install_github("jaeyk/makereproducible",
@@ -43,7 +48,7 @@ devtools::install_github("jaeyk/makereproducible",
 
 library(makereproducible)
 
-# Import custom functions 
+# Import custom functions
 script_list <- list.files(paste0(here::here(), "/functions"),
   pattern = "*.r|*.R",
   full.names = TRUE
@@ -72,6 +77,46 @@ df <- subset(df, race != "Other")
 df <- df[complete.cases(df), ] %>%
   as.data.frame()
 
+# Make dummies
+df <- df %>%
+  mutate(
+    Gender = factor(ifelse(Gender %in% c(1, 2), Gender, NA)),
+
+    Male = factor(ifelse(Gender == 1, 1, 0)),
+
+    Female = factor(ifelse(Gender == 2, 1, 0)),
+
+    Democrat = factor(ifelse(party_id == 1, 1, 0)),
+
+    Republican = factor(ifelse(party_id == 2, 1, 0)),
+
+    for_born = ifelse(for_born %in% c(1, 2), for_born, NA),
+
+    for_born = factor(ifelse(for_born == 2, 1, 0)),
+
+    edu_level = scales::rescale(edu_level),
+
+    income_level = scales::rescale(income_level)
+  )
+
+# Summary statisics - table1
+df %>%
+  as_survey_design(weights = WEIGHT) %>%
+  group_by(race) %>%
+  summarise(
+    "N" = survey_count(.),
+    "Age" = survey_mean(AGE),
+    "Democrat" = survey_mean(as.numeric(as.character(Democrat))),
+    "GOP" = survey_mean(as.numeric(as.character(Republican))),
+    "Income" = survey_mean(income_level),
+    "Education" = survey_mean(edu_level)
+  ) %>%
+  select(!contains("_se")) %>%
+  mutate_at(vars(matches("Nn|Age")), function(x) round(x, 0)) %>%
+  mutate_at(vars(matches("Democrat|GOP")), function(x) paste0(round(x, 2) * 100, "%")) %>%
+  mutate_at(vars(matches("Income|Education")), function(x) round(x, 2)) %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(position = "center")
 ```
 
 # Descriptive analysis 
@@ -95,9 +140,9 @@ summary_stat <- bind_rows(
 summary_stat %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
-    ymax = mean + 2*se,
-    ymin = mean - 2*se, 
-    col = Type, 
+    ymax = mean + 2 * se,
+    ymin = mean - 2 * se,
+    col = Type,
     shape = Type
   )) +
   geom_pointrange() +
@@ -107,7 +152,7 @@ summary_stat %>%
     x = "Race", y = "Mean",
     title = "Average responses by racial groups"
   ) +
-  ylim(c(0,4))
+  ylim(c(0, 4))
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
 ```
@@ -120,6 +165,7 @@ Note that all tests are two-sided.
 ```{r}
 
 table(df$race)
+
 ```
 
  3.1. Bar plots
@@ -155,10 +201,29 @@ ggsave(here("outputs", "bar_plot.png"),
 
 ```{r}
 
-# Individual case analysis
+g1 <- draw_ggm(df, "Asians") + ggtitle("Asians")
+g2 <- draw_ggm(df, "Blacks") + ggtitle("Blacks")
+g3 <- draw_ggm(df, "Whites") + ggtitle("Whites")
+g4 <- draw_ggm(df, "Latinx") + ggtitle("Latinx")
+
+g1 + g4 + g3 + g2
+
+ggsave(here("outputs", "ggm.png"),
+  width = 12, height = 11
+)
+
+
+```
+
+
+```{r}
 
 # Fate - Progress
 fate_progress <- summarise_coeff(
+  df, race, linked_fate, linked_progress
+)
+
+fate_progress_ci <- summarise_ci(
   df, race, linked_fate, linked_progress
 )
 
@@ -167,10 +232,21 @@ fate_hurt <- summarise_coeff(
   df, race, linked_fate, linked_hurt
 )
 
+fate_hurt_ci <- summarise_ci(
+  df, race, linked_fate, linked_hurt
+)
+
 # Progress - Hurt
 progress_hurt <- summarise_coeff(
   df, race, linked_progress, linked_hurt
 )
+
+progress_hurt_ci <- summarise_ci(
+  df, race, linked_progress, linked_hurt
+)
+```
+
+```{r}
 
 # Combining the results
 cor_results <- bind_rows(
@@ -179,15 +255,40 @@ cor_results <- bind_rows(
   mutate(progress_hurt, Type = "progress_hurt")
 )
 
+pearson_only <- bind_rows(
+  mutate(fate_progress_ci, Type = "fate_progress"),
+  mutate(fate_hurt_ci, Type = "fate_hurt"),
+  mutate(progress_hurt_ci, Type = "progress_hurt")
+)
+
+pearson_only %>%
+  mutate(Type = recode(Type,
+    "fate_hurt" = "Fate <-> Hurt",
+    "fate_progress" = "Fate <-> Progress",
+    "progress_hurt" = "Progress <-> Hurt"
+  )) %>%
+  ggplot(aes(
+    x = race, y = mean,
+    ymax = ci_upper,
+    ymin = ci_lower
+  )) +
+  geom_pointrange() +
+  facet_wrap(~Type) +
+  coord_flip()
+
+ggsave(here("outputs", "pearson_with_cis.png"))
+```
+
+## Visualizing the results  
+
+```{r}
 cor_results <- cor_results %>%
   pivot_longer(
-    cols = c("Pearson", "Kendall", "Spearman"),
+    cols = c("Pearson", "Spearman"),
     names_to = "Test",
     values_to = "coeffs"
   )
 ```
-
-## Visualizing the results  
 
 ```{r}
 cor_results %>%
@@ -197,75 +298,26 @@ cor_results %>%
     "fate_progress" = "Fate <-> Progress",
     "progress_hurt" = "Progress <-> Hurt"
   )) %>%
-  ggplot(aes(x = fct_reorder(Test, coeffs), y = coeffs, fill = Type)) +
+  ggplot(aes(
+    x = fct_reorder(Test, coeffs),
+    y = coeffs,
+    fill = Type
+  )) +
   geom_col(position = "dodge") +
   facet_wrap(~race) +
   coord_flip() +
   labs(
     x = "Race", y = "Correlation coefficients",
     title = "Correlation test resuts"
-  )
+  ) +
+  geom_hline(aes(yintercept = c(0.7)), linetype = "dashed")
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
-```
 
-# Reliability test 
-
-The result from Tau equivalence test:
-
-The robust F statistic is  67.467 
-with a p-value  0 
-
-The null hypothesis (the same true score for all items) is rejected. 
-
-```{r}
-
-# Tau equivalence test 
-
-tau_result <- tau.test(df %>% dplyr::select(contains("linked")), varphi = 0.1)
-
-
-# Summarise
-rel_tests <- df %>%
-  group_by(race) %>%
-  nest() %>%
-  mutate(
-    kappa = map(data, reliability_test),
-    kappa_weight = map(data, reliability_weight_test))
-
-# Unnest
-rel_tests <- rel_tests %>%
-  unnest(c(
-    kappa, kappa_weight
-  ))
-```
-
-```{r}
-# Kappa plot
-kappa_plot <- rel_tests %>%
-  ggplot(aes(x = race, y = kappa)) +
-  geom_point() +
-  labs(
-    title = "Reliability test",
-    x = "Race",
-    y = "Conger's Kappa"
-  ) +
-  ylim(c(0,0.5))
-
-# With quadratic weighting
-kappa_weight_plot <- rel_tests %>%
-  ggplot(aes(x = race, y = kappa_weight)) +
-  geom_point() +
-  labs(
-    title = "Reliability test (with quadratic weighting)",
-    x = "Race",
-    y = "Conger's Kappa"
-  ) +
-  ylim(c(0,0.5))
-
-kappa_plot / kappa_weight_plot 
-
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/reliability_tests_plot.png"), height = 8, width = 8)
+# Latex Table
+cor_results %>%
+  filter(Test == "Pearson") %>%
+  kableExtra::kable(format = "latex")
 ```
 
 # Difference-in-means analysis 
@@ -321,35 +373,6 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_pl
 
 # Regression analysis 
 
-## Prepapring the data for modeling 
-
-```{r}
-
-# Create dummy variables to plug them into a regression + normalization
-
-df <- df %>%
-  mutate(
-    Gender = factor(ifelse(Gender %in% c(1, 2), Gender, NA)),
-
-    Male = factor(ifelse(Gender == 1, 1, 0)),
-
-    Female = factor(ifelse(Gender == 2, 1, 0)),
-
-    Democrat = factor(ifelse(party_id == 1, 1, 0)),
-
-    Republican = factor(ifelse(party_id == 2, 1, 0)),
-
-    for_born = ifelse(for_born %in% c(1, 2), for_born, NA),
-
-    for_born = factor(ifelse(for_born == 2, 1, 0)),
-
-    edu_level = scales::rescale(edu_level),
-
-    income_level = scales::rescale(income_level)
-  )
-
-```
-
 ## OLS 
 
 ```{r}
@@ -366,7 +389,6 @@ df_ols <- df_binded %>%
   group_by(DV, race) %>%
   nest() %>%
   mutate(ols = map(data, ols))
-
 ```
 
 ## Visualization
@@ -405,7 +427,7 @@ fit1 <- df_glanced %>%
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  ) + 
+  ) +
   facet_wrap(~race)
 
 fit2 <- df_glanced %>%
@@ -422,7 +444,7 @@ fit2 <- df_glanced %>%
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  ) + 
+  ) +
   facet_wrap(~race)
 
 fit1 / fit2
@@ -474,7 +496,7 @@ df_tidied %>%
     yintercept = 0,
     linetype = "dashed"
   ) +
-  facet_grid(DV~race)
+  facet_grid(DV ~ race)
 
 ggsave(here("outputs", "ols_coeffs.png"))
 ```

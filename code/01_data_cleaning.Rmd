@@ -2,12 +2,14 @@
 title: "Data cleaning"
 author: "Jae Yeon Kim"
 output:
-html_document: 
-  toc: true
-  theme: united
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: united
+    toc: yes
 ---
 
-## 0. Setup 
+# Setup 
 
 ```{r}
 
@@ -19,6 +21,7 @@ pacman::p_load(
     naniar, # missing data
     mice, # imputation
     ggpubr, # arranging ggplots   
+    see, # pub ready visualization 
     ggthemes, # fancy ggplot themes
     here # self-contained projects
 )
@@ -45,7 +48,7 @@ theme_set(theme_pubr())
 
 ```
 
-### 1. Importing data 
+# Import data 
   
 ```{r}
 
@@ -53,7 +56,7 @@ df <- read_csv(make_here("/home/jae/validating-two-linked-fates/raw_data/sub-dat
 
 ```
 
-### 2. Subsetting 
+# Subset data
 
 ```{r}
 df <- df %>%
@@ -73,7 +76,7 @@ df <- df %>%
 
 ```
 
-### 3. Inspeacting missing values 
+# Impute data 
 
 - Inspecting missing data. 
 - Percentage of missing observations: only 1.9%
@@ -84,7 +87,7 @@ ggsave(here("outputs", "missing_vars.png"),
        width = 12)
 ```
 
-### 4. Multiple imputations 
+## Multiple imputations 
 
 ```{r}
 
@@ -99,7 +102,7 @@ df <- mice::complete(imp) # extract the imputed data
 
 ```
 
-### 5. Rescaling and renaming variables 
+# Rescale and rename variables 
 
 ```{r}
 
@@ -120,7 +123,7 @@ df <- df %>%
 
 ```
 
-### 6. Recoding values
+# Recode values
 
 
 ```{r}

@@ -7,6 +7,27 @@ mean_group_key <- function(data, group_var, key_var) {
     )
 }
 
+draw_ggm <- function(data, group_var) {
+  data %>%
+    dplyr::filter(race == {{group_var}}) %>%
+    dplyr::select(contains("linked")) %>%
+    rename("Hurt" = "linked_hurt",
+           "Progress" = "linked_progress",
+           "Fate" = "linked_fate") %>%
+    correlation(partial = TRUE) %>%
+    plot()
+}
+
+create_table <- function(data) {
+  data.frame(
+    "Types" = c("Linked fate", "Linked progress", "Linked hurt"),
+    "Averages" = round(as.numeric(data[1, c(1, 3, 5)]), 2),
+    "SEs" = round(as.numeric(data[1, c(2, 4, 6)]), 2)
+  ) %>%
+    kable(format = "latex", booktabs = TRUE) %>%
+    kable_styling(position = "center")
+}
+
 mean_group_key_weight <- function(data, group_var, key_var) {
   data %>%
     group_by({{ group_var }}) %>%
@@ -36,7 +57,7 @@ bar_plot <- function(data) {
     )) %>%
     group_by(Measures) %>%
     count(Responses) %>%
-    mutate(Responses = factor(Responses, levels = c("Strongly disagree", "Somewhat disagree", "Somewhat agree", "Strongly agree"))) %>%  
+    mutate(Responses = factor(Responses, levels = c("Strongly disagree", "Somewhat disagree", "Somewhat agree", "Strongly agree"))) %>%
     ggplot(aes(x = Responses, y = n)) +
     geom_col() +
     labs(
@@ -57,29 +78,48 @@ bar_plot_weights <- function(data) {
     ) %>%
     mutate(Responses = as.character(Responses)) %>%
     mutate(Responses = recode(Responses,
-                              "4" = "Strongly agree",
-                              "3" = "Somewhat agree",
-                              "2" = "Somewhat disagree",
-                              "1" = "Strongly disagree"
+      "4" = "Strongly agree",
+      "3" = "Somewhat agree",
+      "2" = "Somewhat disagree",
+      "1" = "Strongly disagree"
     )) %>%
     mutate(Measures = recode(Measures,
-                             "linked_fate" = "Linked fate",
-                             "linked_progress" = "Linked progress",
-                             "linked_hurt" = "Linked hurt"
+      "linked_fate" = "Linked fate",
+      "linked_progress" = "Linked progress",
+      "linked_hurt" = "Linked hurt"
     )) %>%
     as_survey_design(weights = WEIGHT) %>%
     group_by(Measures) %>%
     survey_count(Responses) %>%
     mutate(Responses = factor(Responses, levels = c("Strongly disagree", "Somewhat disagree", "Somewhat agree", "Strongly agree"))) %>%
-    ggplot(aes(x = Responses, y = n, ymax = n + 2*n_se, ymin = n - 2*n_se)) +
-      geom_col() +
-      labs(
-        x = "Responses",
-        y = "Count"
-      ) +
-      facet_wrap(~Measures) +
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-      coord_flip()
+    ggplot(aes(x = Responses, y = n, ymax = n + 2 * n_se, ymin = n - 2 * n_se)) +
+    geom_col() +
+    labs(
+      x = "Responses",
+      y = "Count"
+    ) +
+    facet_wrap(~Measures) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    coord_flip()
+}
+
+summarise_ci <- function(data, group_var, var1, var2) {
+  data %>%
+    group_by({{ group_var }}) %>%
+    bootstrapify(300) %>%
+    summarise(
+      Pearson = cor.test(
+        {{ var1 }}, {{ var2 }},
+        method = c("pearson")
+      )$estimate %>%
+        as.numeric()
+    ) %>%
+    group_by(race) %>%
+    summarise(
+      ci_upper = as.numeric(gmodels::ci(Pearson))[3],
+      ci_lower = as.numeric(gmodels::ci(Pearson))[2],
+      mean = mean(Pearson)
+    )
 }
 
 summarise_coeff <- function(data, group_var, var1, var2) {
@@ -89,13 +129,6 @@ summarise_coeff <- function(data, group_var, var1, var2) {
       Pearson = cor.test(
         {{ var1 }}, {{ var2 }},
         method = c("pearson")
-      )$estimate %>%
-        as.numeric(),
-
-      Kendall = cor.test(
-        {{ var1 }}, {{ var2 }},
-        method = c("kendall"),
-        exact = F
       )$estimate %>%
         as.numeric(),
 

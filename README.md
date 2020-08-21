@@ -55,7 +55,7 @@ In the rest of the document, I describe how I have **cleaned**, **analyzed**, an
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/descriptive_stat_plot.png)
 Figure 1. Mean and Standard Errors
 
-In Figure 1, the x-axis indicates the average score of responses to linked fate-related questions. The y-axis charts different racial groups. The mean describes the central tendency of the responses. The limitation is that it does not show how these data points are spread. For that reason, I also included the standard errors, which are indicated by the error bars. One side of the error bar indicates two standard errors. 
+In Figure 1, the x-axis indicates the average score of responses to linked fate-related questions. The y-axis charts different racial groups. The mean describes the central tendency of the responses. The limitation is that it does not show how these data points are spread. For that reason, I also included the standard errors, which are indicated by the error bars. One side of the error bar indicates two standard errors.
 
 Figure 1 clearly demonstrates how the use of a different measure for linked fate yields a different level of response. Overall, the standard linked fate question drew the strongest expressed support for linked fate. On average, linked progress scored higher than linked hurt across all racial groups, including African Americans. These results do not necessarily mean that Dawson's theory is wrong because the data also provides evidence for the presence of linked hurt. However, the theory has failed to include the importance of linked progress mechanisms and its prevalence.
 
@@ -70,7 +70,7 @@ The pattern for the responses to the linked fate questions among African America
 
 However, the same respondents became more skeptical when they were asked about the specific connection between their group and individual utility. We can see similar patterns across other racial groups, with white respondents’ answers representing an extreme example. In that case, the respondents began to disagree with the idea of white group consciousness more than they agreed with it.
 
-#### Correlation tests
+#### Reliability tests
 
 As the next step, I examined the correlation between the standard and nobel linked fate measures. The theory predicts that the responses of the standard linked fate measure should covary more closely with the responses of the linked hurt measure than with those of the linked progress measure. This hypothesis was not true across all racial groups except whites, where the correlation coefficients between these two relationships were quite close.
 
@@ -79,26 +79,17 @@ I calculated the correlation coefficients using four different methods, as these
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/cor_coeffs_plot.png)
 Figure 3. Correlation tests results
 
-#### Reliability tests
-
-The other necessary step was checking reliability. Perhaps, the differences in responses in these three linked fate questions arose by chance. The questions were all related and their wording was similar. Thus, this was a legitimate concern. I addressed this problem by calculating Conger's kappa. Conger's kappa is a generalized version of Cohen's kappa and shows whether the raters have a perfect agreement (=1) or if their agreement is entirely a fluke (=0). This technique is often used to test the reliability of raters. Here, I employed this method to determine whether similarities in the responses of these three linked fate questions occurred by chance.
-
-In Figure 4, the y-axis indicates Conger's kappa statistic, and the x-axis plots different racial groups. The top panel shows that the reliability score for whites is far lower than that of other groups. The bottom panel shows that weighting makes no difference. All kappa statistics are between 0.36 and 0.474.
-
-![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/reliability_tests_plot.png)
-Figure 4. Correlation tests results
-
 #### Difference of means test
 
 Finally, I would like to revisit Figure 1 and stress the extent to which using the standard linked fate question creates more positive responses compared to the more specific question. Here, the left panel (Hurt - Fate) shows the mean difference between the responses of the linked hurt question and those of the standard linked fate question. Similarly, the right panel (Progress - Fate) displays the mean difference between the responses of the linked progress question and those of the standard linked fate question. The x-axis charts different racial groups. The y-axis indicates the difference in means. In both cases, it is clear that using a specific question decreases the ratio of positive responses. The ratio decreases faster in the case of the linked hurt than that of the linked hurt question. In that regard, white respondents showed the most extreme tendency.
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/diff_in_means_plot.png)
-Figure 5. The difference in means test results
+Figure 4. The difference in means test results
 
 #### Regression analysis [TBD]
 
 ![](https://github.com/jaeyk/validating-two-linked-fates/blob/master/outputs/ols_coeffs.png)
-Figure 6. OLS estimates
+Figure 5. OLS estimates
 
 #### Concluding remarks
 
