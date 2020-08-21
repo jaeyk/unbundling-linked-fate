@@ -122,6 +122,23 @@ summarise_ci <- function(data, group_var, var1, var2) {
     )
 }
 
+summarise_rci <- function(data, group_var, var1, var2, method){
+  
+  cor <- data %>% 
+    group_by({{group_var}}) %>% 
+    select({{ var1 }}, {{ var2 }}) %>% 
+    correlation(method = {{ method }}) %>% 
+    data.frame()
+  
+  data.frame("type" = rep(paste({{var1}}, {{var2}}), times = 4),
+             "race" = cor$Group,
+             "r" = cor$r, 
+             "ci_upper" = cor$CI_high,
+             "ci_lower" = cor$CI_low,
+             "Test" = paste(method))
+  
+}
+
 summarise_coeff <- function(data, group_var, var1, var2) {
   data %>%
     group_by({{ group_var }}) %>%

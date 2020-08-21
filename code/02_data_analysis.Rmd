@@ -133,7 +133,7 @@ summary_stat <- bind_rows(
 
 ```
 
-## Visualizing the results 
+## Visualize
 
 ```{r}
 
@@ -156,19 +156,7 @@ summary_stat %>%
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
 ```
-
-  
-# Correlation analysis
-
-Note that all tests are two-sided.
-
-```{r}
-
-table(df$race)
-
-```
-
- 3.1. Bar plots
+## Bar plots
 
 ```{r}
 
@@ -196,8 +184,18 @@ ggsave(here("outputs", "bar_plot.png"),
   width = 10
 )
 ```
+  
+# Correlation analysis
 
-## Four correlation coefficients 
+Note that all tests are two-sided.
+
+```{r}
+
+table(df$race)
+
+```
+
+## Gaussian Model 
 
 ```{r}
 
@@ -215,82 +213,66 @@ ggsave(here("outputs", "ggm.png"),
 
 ```
 
+## Pearson + Spearman
 
 ```{r}
 
 # Fate - Progress
-fate_progress <- summarise_coeff(
-  df, race, linked_fate, linked_progress
+fate_progressp <- summarise_rci(
+  df, race, "linked_fate", "linked_progress", "Pearson"
 )
 
-fate_progress_ci <- summarise_ci(
-  df, race, linked_fate, linked_progress
+fate_progresss <- summarise_rci(
+  df, race, "linked_fate", "linked_progress", "Spearman"
 )
 
 # Fate - Hurt
-fate_hurt <- summarise_coeff(
-  df, race, linked_fate, linked_hurt
+fate_hurtp <- summarise_rci(
+  df, race, "linked_fate", "linked_hurt", "Pearson"
 )
 
-fate_hurt_ci <- summarise_ci(
-  df, race, linked_fate, linked_hurt
+fate_hurts <- summarise_rci(
+  df, race, "linked_fate", "linked_hurt", "Spearman"
 )
 
 # Progress - Hurt
-progress_hurt <- summarise_coeff(
-  df, race, linked_progress, linked_hurt
+progress_hurtp <- summarise_rci(
+  df, race, "linked_progress", "linked_hurt", "Pearson"
 )
 
-progress_hurt_ci <- summarise_ci(
-  df, race, linked_progress, linked_hurt
+progress_hurts <- summarise_rci(
+  df, race, "linked_progress", "linked_hurt", "Spearman"
 )
+
 ```
 
 ```{r}
 
-# Combining the results
+# Combine the results
 cor_results <- bind_rows(
-  mutate(fate_progress, Type = "fate_progress"),
-  mutate(fate_hurt, Type = "fate_hurt"),
-  mutate(progress_hurt, Type = "progress_hurt")
-)
+  fate_progressp, 
+  fate_progresss, 
+  fate_hurtp, 
+  fate_hurts, 
+  progress_hurtp, 
+  progress_hurts
+) 
 
-pearson_only <- bind_rows(
-  mutate(fate_progress_ci, Type = "fate_progress"),
-  mutate(fate_hurt_ci, Type = "fate_hurt"),
-  mutate(progress_hurt_ci, Type = "progress_hurt")
-)
+# Replace string patterns 
+cor_results$type <- str_replace_all(cor_results$type, "linked_", "")
+cor_results$type <- str_replace_all(cor_results$type, " ", "_")
 
-pearson_only %>%
-  mutate(Type = recode(Type,
-    "fate_hurt" = "Fate <-> Hurt",
-    "fate_progress" = "Fate <-> Progress",
-    "progress_hurt" = "Progress <-> Hurt"
-  )) %>%
-  ggplot(aes(
-    x = race, y = mean,
-    ymax = ci_upper,
-    ymin = ci_lower
-  )) +
-  geom_pointrange() +
-  facet_wrap(~Type) +
-  coord_flip()
-
-ggsave(here("outputs", "pearson_with_cis.png"))
-```
-
-## Visualizing the results  
-
-```{r}
+# Rename values 
 cor_results <- cor_results %>%
-  pivot_longer(
-    cols = c("Pearson", "Spearman"),
-    names_to = "Test",
-    values_to = "coeffs"
-  )
+  rename("coeffs" = "r") %>%
+  rename("Type" = "type")
+
 ```
 
+## Visualize 
+
 ```{r}
+
 cor_results %>%
   mutate(coeffs = round(coeffs, 4)) %>%
   mutate(Type = recode(Type,
@@ -303,21 +285,21 @@ cor_results %>%
     y = coeffs,
     fill = Type
   )) +
-  geom_col(position = "dodge") +
+  geom_bar(stat = "identity", color = "black", 
+           position = position_dodge()) +
+  geom_errorbar(aes(ymax = ci_upper, 
+                    ymin = ci_lower), width = .2, 
+                position = position_dodge(.9)) +
   facet_wrap(~race) +
   coord_flip() +
   labs(
-    x = "Race", y = "Correlation coefficients",
+    x = "Method", y = "Correlation coefficients",
     title = "Correlation test resuts"
   ) +
   geom_hline(aes(yintercept = c(0.7)), linetype = "dashed")
 
 ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
 
-# Latex Table
-cor_results %>%
-  filter(Test == "Pearson") %>%
-  kableExtra::kable(format = "latex")
 ```
 
 # Difference-in-means analysis 
@@ -346,7 +328,7 @@ diff_results <- bind_rows(
 )
 ```
 
-## Visualizing the results 
+## Visualize
 
 ```{r}
 
