@@ -207,7 +207,7 @@ g4 <- draw_ggm(df, "Latinx")
 g1 + g4 + g3 + g2
 
 ggsave(here("outputs", "ggm.png"),
-  width = 10, height = 11
+  width = 10, height = 12
 )
 
 ```
