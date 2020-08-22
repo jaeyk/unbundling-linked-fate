@@ -7,6 +7,15 @@ mean_group_key <- function(data, group_var, key_var) {
     )
 }
 
+partial_cor <- function(data, group_var) {
+  data %>%
+    dplyr::filter(race == {{group_var}}) %>%
+    dplyr::select(contains("linked")) %>%
+    rename("Hurt" = "linked_hurt",
+           "Progress" = "linked_progress",
+           "Fate" = "linked_fate") %>%
+    correlation(partial = TRUE)}
+    
 draw_ggm <- function(data, group_var) {
   data %>%
     dplyr::filter(race == {{group_var}}) %>%
@@ -15,7 +24,10 @@ draw_ggm <- function(data, group_var) {
            "Progress" = "linked_progress",
            "Fate" = "linked_fate") %>%
     correlation(partial = TRUE) %>%
-    plot()
+    plot() +
+    labs(edge_width = "Coefficient",
+         title = {{group_var}}) +
+    theme(legend.position = "bottom")
 }
 
 create_table <- function(data) {

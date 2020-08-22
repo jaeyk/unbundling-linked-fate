@@ -18,6 +18,7 @@ output:
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
   tidyverse, # the tidyverse framework
+  tidygraph, # tidy graph manipulation
   broom, # tidying model objects
   ggpubr, # arranging ggplots
   ggthemes, # fancy ggplot themes
@@ -198,18 +199,16 @@ table(df$race)
 ## Gaussian Model 
 
 ```{r}
-
-g1 <- draw_ggm(df, "Asians") + ggtitle("Asians")
-g2 <- draw_ggm(df, "Blacks") + ggtitle("Blacks")
-g3 <- draw_ggm(df, "Whites") + ggtitle("Whites")
-g4 <- draw_ggm(df, "Latinx") + ggtitle("Latinx")
+g1 <- draw_ggm(df, "Asians") 
+g2 <- draw_ggm(df, "Blacks")
+g3 <- draw_ggm(df, "Whites")
+g4 <- draw_ggm(df, "Latinx") 
 
 g1 + g4 + g3 + g2
 
 ggsave(here("outputs", "ggm.png"),
-  width = 12, height = 11
+  width = 10, height = 11
 )
-
 
 ```
 
