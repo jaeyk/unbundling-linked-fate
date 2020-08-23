@@ -27,6 +27,7 @@ draw_ggm <- function(data, group_var) {
     plot() +
     labs(edge_width = "Coefficient",
          title = {{group_var}}) +
+    theme_graph() +
     theme(legend.position = "bottom")
 }
 

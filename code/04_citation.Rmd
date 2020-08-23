@@ -1,0 +1,137 @@
+---
+title: "Citation analysis"
+author: "Jae Yeon Kim"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    theme: united
+    toc: yes
+---
+
+# Setup 
+
+```{r}
+
+# Import libs
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  tidyverse, # the tidyverse framework
+  ggpubr, # arranging ggplots
+  ggthemes, # fancy ggplot themes
+  patchwork, # easy ggarrange
+  here, # self-contained projects
+  rvest, # web scraping 
+  testthat # unit testing 
+)
+
+devtools::install_github("jaeyk/makereproducible",
+  dependencies = TRUE
+)
+
+library(makereproducible)
+
+# Import custom functions
+script_list <- list.files(paste0(here::here(), "/functions"),
+  pattern = "*.r|*.R",
+  full.names = TRUE
+)
+
+for (i in 1:length(script_list))
+{
+  source(script_list[[i]])
+}
+
+# for publication-friendly theme
+theme_set(theme_pubr())
+
+```
+# Create a list of URLs 
+
+```{r}
+
+# Range 
+
+pub_year <- 1994 
+
+range <- (lubridate::year(Sys.Date()) - pub_year)
+
+# Placeholders 
+url_list <- list()
+
+# For loop 
+for (i in 1:range){
+  
+  base <- "https://scholar.google.com/scholar?hl=en&as_sdt=2005&sciodt=0%2C5&cites=8941738289420139866&scipsc="
+
+  start_year <- paste0("as_ylo=", pub_year - 1 + i)
+  
+  end_year <- paste0("as_yhi=", pub_year + i)
+  
+  target_url[i] <- paste0(base, "&", start_year, "&", end_year)
+  
+  message(paste("citation information between", pub_year - 1 + i, pub_year + i))
+  
+  url_list[i] <- target_url[i]
+  
+}
+
+# Turn the list into a dataframe 
+urls <- url_list %>% map_df(enframe) %>% select(value)
+
+```
+
+# Create a custom function 
+
+```{r}
+
+find_hit <- function(url){
+
+  # Read html data 
+  doc <- read_html(curl::curl(url, handle = curl::new_handle("useragent" = "Mozilla/5.0"))) %>%
+    html_nodes("div.gs_ab_mdw") %>%
+    html_text()
+  
+  # Parse the text 
+  
+  text <- doc[2]
+  
+  # Output 
+  readr::parse_number(text)
+
+}
+
+```
+
+# Plug the URLs into the function 
+
+```{r}
+
+hits <- urls %>%
+  rename("URL" = "value") 
+  mutate(Hits = map(URL, find_hit)) 
+
+df <- hits$Hits %>% map_df(enframe) %>%
+  mutate(year = pub_year:(lubridate::year(Sys.Date()) -1)) %>%
+  select(year, value) %>%
+  rename("Hits" = "value")
+
+```
+
+# Visualize 
+
+```{r}
+df %>%
+  ggplot(aes(x = year, y = Hits)) +
+    geom_col() +
+    labs(x = "Year", y = "Count of citations in each year",
+         title = expression(paste("Citation information about Michale Dawson's", " ", italic("Behind the Mule: Race and Class in African-American Politics"))),
+         caption = "Source: Google Scholar (August 23, 2020)")
+
+ggsave(here("outputs", "cite.png"), width = 11)
+```
+
+
+
+
