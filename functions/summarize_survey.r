@@ -7,6 +7,19 @@ mean_group_key <- function(data, group_var, key_var) {
     )
 }
 
+summarise_ols <- function(data, func, term){
+
+  data %>%
+    group_by(DV, race) %>%
+    nest() %>%
+    mutate(ols = map(data, func)
+    ) %>%
+    unnest(tidied = map(ols, ~ tidy(., conf.int = TRUE))
+    ) %>%
+    filter(term == {{term}})
+
+  }
+
 partial_cor <- function(data, group_var) {
   data %>%
     dplyr::filter(race == {{group_var}}) %>%
@@ -249,4 +262,16 @@ group_diff_in_means <- function(data, group_var, var1, var2) {
 
 ols <- function(data) {
   lm(difference ~ edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+}
+
+ols_lf <- function(data) {
+  lm(pol_pref ~ linked_fate + edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+}
+
+ols_lp <- function(data) {
+  lm(pol_pref ~ linked_progress + edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+}
+
+ols_lh <- function(data) {
+  lm(pol_pref ~ linked_hurt + edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
 }

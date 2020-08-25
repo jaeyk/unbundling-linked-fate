@@ -370,6 +370,7 @@ df_ols <- df_binded %>%
   group_by(DV, race) %>%
   nest() %>%
   mutate(ols = map(data, ols))
+
 ```
 
 ## Visualization
@@ -480,4 +481,89 @@ df_tidied %>%
   facet_grid(DV ~ race)
 
 ggsave(here("outputs", "ols_coeffs.png"))
+```
+
+## Predictions 
+
+```{r}
+
+df_pol <- df %>%
+  pivot_longer(
+    cols = c(contains("Q13")),
+    names_to = "DV",
+    values_to = "pol_pref"
+  ) %>%
+  mutate(pol_pref = as.character(pol_pref)) %>%
+  mutate(pol_pref = recode(pol_pref,
+      "1" = "3",
+      "3" = "1"
+    )) %>%
+  mutate(pol_pref = as.numeric(pol_pref)) %>%
+  mutate(DV = recode(DV, 
+         "Q13a" = "Universal health care",
+         "Q13b" = "Free college",
+         "Q13c" = "Progressive taxation",
+         "Q13f" = "Undocumented immigrants", 
+         "Q13g" = "K-12 education",
+         "Q13h" = "Criminal justice reform"))
+
+```
+
+```{r}
+lf_results <- summarise_ols(df_pol, ols_lf, "linked_fate")
+
+lp_results <- summarise_ols(df_pol, ols_lp, "linked_progress")
+
+lh_results <- summarise_ols(df_pol, ols_lh, "linked_hurt")
+
+results <- bind_rows(
+          #mutate(lf_results, Type = "Linked fate"), 
+          mutate(lp_results, Type = "Linked progress"),
+          mutate(lh_results, Type = "Linked hurt"))
+
+```
+
+```{r}
+results %>%
+  ggplot(aes(
+    x = fct_reorder(race, estimate),
+    y = estimate,
+    ymax = conf.high,
+    ymin = conf.low,
+    col = Type,
+    shape = Type
+  )) +
+  geom_pointrange() +
+  coord_flip() +
+  labs(x = "", y = "OLS Estimate") +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  facet_wrap(~DV, ncol = 3)
+
+ggsave(here("outputs", "predictions.png"))
+
+```
+
+```{r}
+results %>%
+  ggplot(aes(
+    x = fct_reorder(race, estimate),
+    y = estimate,
+    ymax = conf.high,
+    ymin = conf.low,
+    col = Type,
+    shape = Type
+  )) +
+  geom_point() +
+  coord_flip() +
+  labs(x = "", y = "OLS Estimate") +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  facet_wrap(~DV, ncol = 3)
+
+ggsave(here("outputs", "predictions_no_ses.png"))
 ```
