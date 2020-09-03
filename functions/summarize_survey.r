@@ -19,29 +19,31 @@ summarise_ols <- function(data, func, term){
     filter(term == {{term}})
 
   }
-
-partial_cor <- function(data, group_var) {
-  data %>%
-    dplyr::filter(race == {{group_var}}) %>%
-    dplyr::select(contains("linked")) %>%
-    rename("Hurt" = "linked_hurt",
-           "Progress" = "linked_progress",
-           "Fate" = "linked_fate") %>%
-    correlation(partial = TRUE)}
     
 draw_ggm <- function(data, group_var) {
-  data %>%
+  graph <- data %>%
     dplyr::filter(race == {{group_var}}) %>%
-    dplyr::select(contains("linked")) %>%
+    dplyr::select(contains(("linked"))) %>%
     rename("Hurt" = "linked_hurt",
            "Progress" = "linked_progress",
            "Fate" = "linked_fate") %>%
     correlation(partial = TRUE) %>%
-    plot() +
-    labs(edge_width = "Coefficient",
-         title = {{group_var}}) +
+    data.frame() %>%
+    select(Parameter1, Parameter2, r) %>%
+    igraph::graph.data.frame(directed = FALSE) 
+  
+  # Visualize the network 
+  graph %>%
+    ggraph(layout = "auto") +
+    geom_edge_link(alpha = .8, 
+                   aes(width = r),
+                   size = 5) + 
+    geom_node_point(color = "blue", size = 2) +
+    geom_node_text(aes(label = name),  repel = TRUE) +
+    scale_edge_width(range = c(0.2, 2)) +
     theme_graph() +
-    theme(legend.position = "bottom")
+    theme(legend.position = "none") +
+    labs(title = {{group_var}}) 
 }
 
 create_table <- function(data) {
@@ -265,13 +267,13 @@ ols <- function(data) {
 }
 
 ols_lf <- function(data) {
-  lm(pol_pref ~ linked_fate + edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+  lm(pol_pref ~ linked_fate, data = data)
 }
 
 ols_lp <- function(data) {
-  lm(pol_pref ~ linked_progress + edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+  lm(pol_pref ~ linked_progress, data = data)
 }
 
 ols_lh <- function(data) {
-  lm(pol_pref ~ linked_hurt + edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+  lm(pol_pref ~ linked_hurt, data = data)
 }

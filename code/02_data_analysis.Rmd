@@ -524,6 +524,7 @@ results <- bind_rows(
 ```
 
 ```{r}
+
 results %>%
   ggplot(aes(
     x = fct_reorder(race, estimate),
