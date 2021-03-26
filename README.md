@@ -2,6 +2,8 @@
 
 **Identifying and validating multiple interpretations of linked fate**
 
+- Preprint: https://osf.io/preprints/socarxiv/k6c9x
+
 ## Overview
 
 This project investigates how people interpret linked fate, a major measure of group consciousness in identity politics. Dawson's [*Behind the Mule*](https://books.google.com/books?hl=en&lr=&id=0-I9DwAAQBAJ&oi=fnd&pg=PP11&ots=sEoMI1VStP&sig=NLmBqid3hZa2GKO1lpMvSPdYTQo#v=onepage&q&f=false) (1994) argues that African Americans remain a cohesive racial group despite the growing within-group economic inequality, because the centuries-long experience of racial discrimination ties their individual and group utility together. He called this connection "linked fate", and since then, linked fate has become a popular measure of group solidarity across diverse group contexts (a Google Scholar search yields [more than 2700 results](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C5&q=%22linked+fate%22&btnG=)).
