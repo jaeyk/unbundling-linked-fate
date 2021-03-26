@@ -40,7 +40,9 @@ pacman::p_load(
   kableExtra, # tables
   ggraph, # Gaussian Graphical Models
   here, # self-contained projects
-  rptR # repeatability test 
+  rptR, # repeatability test 
+  scales,# scaling
+  update = TRUE
 )
 
 devtools::install_github("jaeyk/makereproducible",
@@ -122,16 +124,53 @@ df %>%
 
 # Descriptive analysis 
 
+## Normalized comparison 
+
+```{r}
+df_scaled <- df %>%
+  group_by(race) %>%
+  select(linked_fate, linked_progress, linked_hurt) %>%
+  mutate(alternative = (linked_progress + linked_hurt)/2) %>%
+  select(-c(linked_progress, linked_hurt)) %>%
+  rename(traditional = linked_fate) %>%
+  mutate(traditional = scales::rescale(traditional, to = c(-1,1)),
+         alternative = scales::rescale(alternative, to = c(-1,1)))
+
+table2 <- df_scaled %>%
+  pivot_longer(cols = c(traditional, alternative), 
+               names_to = "type", 
+               values_to = "value") %>%
+  group_by(race, type) %>%
+  summarise(
+     mean = round(mean(value), 2),
+  ) %>%
+  pivot_wider(names_from = type,
+              values_from = mean) %>%
+  select(race, traditional, alternative)
+
+print_table2 <- table2 %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(position = "center")
+```
+
 ## Mean and SEs
 
 ```{r}
-
 summary_stat <- bind_rows(
   mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
   mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
   mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt")
-)
+) %>%
+  select(Type, race, mean) %>%
+  mutate(mean = round(mean, 2)) %>%
+  group_by(race) %>%
+  tidyr::pivot_wider(
+    names_from = Type, 
+    values_from = mean) 
 
+print_summary_stat <- summary_stat %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(position = "center")
 ```
 
 ## Visualize
