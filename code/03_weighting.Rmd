@@ -117,6 +117,8 @@ sub_summary <- df_weights %>%
             linked_hurt = survey_mean(linked_hurt))
 
 create_table(sub_summary)
+
+df_weights
 ```
 
 
