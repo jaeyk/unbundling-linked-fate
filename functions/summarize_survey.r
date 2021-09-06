@@ -18,7 +18,32 @@ summarise_ols <- function(data, func, term){
     ) %>%
     filter(term == {{term}})
 
-  }
+}
+
+interpret_estimate <- function(model){
+  
+  # Control
+  intercept <- model$estimate[model$term == "(Intercept)"]
+  control <- exp(intercept) / (1 + exp(intercept))
+  
+  # Likelihood
+  model <- model %>% filter(term != "(Intercept)")
+  
+  model$likelihood <- (exp(model$estimate) / (1 - control + (control * exp(model$estimate))))
+  
+  return(model)
+}
+
+summarise_glm <- function(data, func, term){
+  
+  data %>%
+    group_by(race) %>%
+    nest() %>%
+    mutate(glm = map(data, func)) %>%
+    unnest(glm) %>%
+    filter(term == {{term}})
+  
+}
     
 draw_ggm <- function(data, group_var) {
   graph <- data %>%
@@ -89,7 +114,7 @@ bar_plot <- function(data) {
     ggplot(aes(x = Responses, y = n)) +
     geom_col() +
     labs(
-      x = "Responses",
+      x = "",
       y = "Count"
     ) +
     facet_wrap(~Measures) +
@@ -263,17 +288,48 @@ group_diff_in_means <- function(data, group_var, var1, var2) {
 }
 
 ols <- function(data) {
-  lm(difference ~ edu_level + income_level + Female + Democrat + Republican + for_born + edu_level + income_level, data = data)
+  lm(difference ~ edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
 }
 
 ols_lf <- function(data) {
-  lm(pol_pref ~ linked_fate, data = data)
+  lm_robust(values ~ linked_fate + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
 }
 
 ols_lp <- function(data) {
-  lm(pol_pref ~ linked_progress, data = data)
+  lm_robust(values ~ linked_progress + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
 }
 
 ols_lh <- function(data) {
-  lm(pol_pref ~ linked_hurt, data = data)
+  lm_robust(values ~ linked_hurt + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
+}
+
+glm_lf <- function(data) {
+  
+  glm.out <- glm(state_housing ~ linked_fate + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data, family = "binomial")
+  
+  out.tidy <- tidy(glm.out, conf.int = TRUE) %>%
+    interpret_estimate()
+  
+  return(out.tidy)
+  
+}
+
+glm_lp <- function(data) {
+  
+  glm.out <- glm(state_housing ~ linked_progress + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data, family = "binomial")
+ 
+  out.tidy <- tidy(glm.out, conf.int = TRUE) %>%
+    interpret_estimate()
+  
+  return(out.tidy) 
+}
+
+glm_lh <- function(data) {
+  
+  glm.out <- glm(state_housing ~ linked_hurt + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data, family = "binomial")
+  
+  out.tidy <- tidy(glm.out, conf.int = TRUE) %>%
+    interpret_estimate()
+  
+  return(out.tidy)
 }

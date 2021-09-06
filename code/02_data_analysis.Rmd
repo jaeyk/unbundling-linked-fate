@@ -19,7 +19,9 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
   tidyverse, # the tidyverse framework
   tidygraph, # tidy graph manipulation
+  estimatr, # fast estimation
   broom, # tidying model objects
+  ggrepel, 
   ggpubr, # arranging ggplots
   ggthemes, # fancy ggplot themes
   MKinfer, # inferential statistics
@@ -41,8 +43,7 @@ pacman::p_load(
   ggraph, # Gaussian Graphical Models
   here, # self-contained projects
   rptR, # repeatability test 
-  scales,# scaling
-  update = TRUE
+  scales# scaling
 )
 
 devtools::install_github("jaeyk/makereproducible",
@@ -75,7 +76,9 @@ df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/p
 
 # Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
+```
 
+```{r}
 # Using only complete cases
 df <- df[complete.cases(df), ] %>%
   as.data.frame()
@@ -83,6 +86,8 @@ df <- df[complete.cases(df), ] %>%
 # Make dummies
 df <- df %>%
   mutate(
+    Evangelical = factor(ifelse(evangelical == 1, 1, 0)),
+      
     Gender = factor(ifelse(Gender %in% c(1, 2), Gender, NA)),
 
     Male = factor(ifelse(Gender == 1, 1, 0)),
@@ -99,7 +104,9 @@ df <- df %>%
 
     edu_level = scales::rescale(edu_level),
 
-    income_level = scales::rescale(income_level)
+    income_level = scales::rescale(income_level),
+    
+    Age = scales::rescale(AGE)
   )
 
 # Summary statisics - table1
@@ -107,7 +114,7 @@ df %>%
   as_survey_design(weights = WEIGHT) %>%
   group_by(race) %>%
   summarise(
-    "N" = survey_count(.),
+    "N" = survey_count(.),di
     "Age" = survey_mean(AGE),
     "Democrat" = survey_mean(as.numeric(as.character(Democrat))),
     "GOP" = survey_mean(as.numeric(as.character(Republican))),
@@ -163,7 +170,6 @@ summary_stat <- bind_rows(
 ) %>%
   select(Type, race, mean) %>%
   mutate(mean = round(mean, 2)) %>%
-  group_by(race) %>%
   tidyr::pivot_wider(
     names_from = Type, 
     values_from = mean) 
@@ -171,13 +177,19 @@ summary_stat <- bind_rows(
 print_summary_stat <- summary_stat %>%
   kable(format = "latex", booktabs = TRUE) %>%
   kable_styling(position = "center")
+
+print_summary_stat
 ```
 
 ## Visualize
 
 ```{r}
 
-summary_stat %>%
+bind_rows(
+  mutate(mean_group_key(df, race, linked_fate), Type = "Linked fate"),
+  mutate(mean_group_key(df, race, linked_progress), Type = "Linked progress"),
+  mutate(mean_group_key(df, race, linked_hurt), Type = "Linked hurt")
+) %>%
   ggplot(aes(
     x = fct_reorder(race, mean), y = mean,
     ymax = mean + 2 * se,
@@ -186,10 +198,11 @@ summary_stat %>%
     shape = Type
   )) +
   geom_pointrange() +
+  scale_color_brewer(palette = "Dark2") +
   coord_flip() +
-  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_hline(yintercept = 2.5, linetype = "dashed") +
   labs(
-    x = "Race", y = "Mean",
+    x = "", y = "Mean",
     title = "Average responses by racial groups"
   ) +
   ylim(c(0, 4))
@@ -323,6 +336,7 @@ cor_results %>%
     y = coeffs,
     fill = Type
   )) +
+  scale_fill_brewer(palette = "Dark2") +
   geom_bar(stat = "identity", color = "black", 
            position = position_dodge()) +
   geom_errorbar(aes(ymax = ci_upper, 
@@ -377,6 +391,7 @@ diff_results %>%
     ymin = -diff - conf
   )) +
   geom_pointrange() +
+  geom_text_repel(aes(label = round(diff, 2))) +
   labs(
     x = "Race",
     y = "Difference in means",
@@ -407,70 +422,22 @@ df_binded <- df %>%
 
 df_ols <- df_binded %>%
   group_by(DV, race) %>%
-  nest() %>%
-  mutate(ols = map(data, ols))
+  nest() 
 
+df_ols <- df_ols %>%
+  mutate(ols = map(data, ols))
 ```
 
 ## Visualization
 
 ```{r}
-
 df_tidied <- df_ols %>%
   unnest(tidied = map(ols, ~ tidy(., conf.int = TRUE)))
 
 df_glanced <- df_ols %>%
   unnest(glanced = map(ols, broom::glance))
-```
 
-- Model fit 
-
-```{r}
-
-df_glanced <- df_glanced %>%
-  mutate(DV = recode(DV,
-    "linked_fate" = "Linked fate",
-    "linked_progress" = "Linked progress",
-    "linked_hurt" = "Linked hurt"
-  ))
-
-fit1 <- df_glanced %>%
-  ggplot(aes(
-    x = fct_reorder(DV, r.squared),
-    y = r.squared
-  )) +
-  geom_point() +
-  coord_flip() +
-  labs(
-    x = "",
-    title = "R-squared"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    linetype = "dashed"
-  ) +
-  facet_wrap(~race)
-
-fit2 <- df_glanced %>%
-  ggplot(aes(
-    x = fct_reorder(DV, r.squared),
-    y = adj.r.squared
-  )) +
-  geom_point() +
-  coord_flip() +
-  labs(
-    x = "",
-    title = "Adjusted R-squared"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    linetype = "dashed"
-  ) +
-  facet_wrap(~race)
-
-fit1 / fit2
-
-ggsave(here("outputs", "ols_fits.png"), height = 10)
+unique(df_tidied$term)
 ```
 
 - Coefficients 
@@ -498,6 +465,8 @@ df_tidied <- df_tidied %>%
     "fate_progress" = "Progress - Fate",
     "fate_hurt" = "Hurt - Fate"
   ))
+
+unique(df_tidied$term)
 ```
 
 ```{r}
@@ -525,28 +494,25 @@ ggsave(here("outputs", "ols_coeffs.png"))
 ## Predictions 
 
 ```{r}
+# recode
+df$likely_to_vote <- ((max(df$likely_to_vote) + 1) - df$likely_to_vote)
+
+df$re_elect_trump <- ((max(df$re_elect_trump) + 1) - df$re_elect_trump)
+
+df$state_housing <- if_else(df$state_housing == 1, 1, 0)
 
 df_pol <- df %>%
   pivot_longer(
-    cols = c(contains("Q13")),
+    cols = c(likely_to_vote, re_elect_trump),
     names_to = "DV",
-    values_to = "pol_pref"
-  ) %>%
-  mutate(pol_pref = as.character(pol_pref)) %>%
-  mutate(pol_pref = recode(pol_pref,
-      "1" = "3",
-      "3" = "1"
-    )) %>%
-  mutate(pol_pref = as.numeric(pol_pref)) %>%
-  mutate(DV = recode(DV, 
-         "Q13a" = "Universal health care",
-         "Q13b" = "Free college",
-         "Q13c" = "Progressive taxation",
-         "Q13f" = "Undocumented immigrants", 
-         "Q13g" = "K-12 education",
-         "Q13h" = "Criminal justice reform"))
+    values_to = "values"
+  )
 
+df_stat <- df %>%
+  select(-c(likely_to_vote, re_elect_trump))
 ```
+
+### Voting behavior
 
 ```{r}
 lf_results <- summarise_ols(df_pol, ols_lf, "linked_fate")
@@ -556,54 +522,69 @@ lp_results <- summarise_ols(df_pol, ols_lp, "linked_progress")
 lh_results <- summarise_ols(df_pol, ols_lh, "linked_hurt")
 
 results <- bind_rows(
-          #mutate(lf_results, Type = "Linked fate"), 
+          mutate(lf_results, Type = "Linked fate"), 
           mutate(lp_results, Type = "Linked progress"),
           mutate(lh_results, Type = "Linked hurt"))
-
 ```
 
 ```{r}
-
 results %>%
+  mutate(DV = recode(DV, 
+    "likely_to_vote" = "Voting likelihood",
+    "re_elect_trump" = "Trump re-election preference")) %>%
   ggplot(aes(
     x = fct_reorder(race, estimate),
     y = estimate,
     ymax = conf.high,
-    ymin = conf.low,
-    col = Type,
-    shape = Type
+    ymin = conf.low
   )) +
+  scale_color_brewer(palette = "Dark2") +
   geom_pointrange() +
+  ggrepel::geom_text_repel(aes(label = round(estimate, 2))) +
   coord_flip() +
   labs(x = "", y = "OLS Estimate") +
+  facet_grid(Type~DV) +
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  ) +
-  facet_wrap(~DV, ncol = 3)
+  )
 
-ggsave(here("outputs", "predictions.png"))
+ggsave(here("outputs", "predictions_vote.png"))
+```
 
+### Policy preference 
+
+```{r}
+lf_results_pp <- summarise_glm(df_stat, glm_lf, "linked_fate")
+
+lp_results_pp <- summarise_glm(df_stat, glm_lp, "linked_progress")
+
+lh_results_pp <- summarise_glm(df_stat, glm_lh, "linked_hurt")
+
+results_pp <- bind_rows(
+          mutate(lf_results_pp, Type = "Linked fate"), 
+          mutate(lp_results_pp, Type = "Linked progress"),
+          mutate(lh_results_pp, Type = "Linked hurt"))
 ```
 
 ```{r}
-results %>%
+results_pp %>%
   ggplot(aes(
     x = fct_reorder(race, estimate),
     y = estimate,
     ymax = conf.high,
-    ymin = conf.low,
-    col = Type,
-    shape = Type
+    ymin = conf.low
   )) +
-  geom_point() +
+  scale_color_brewer(palette = "Dark2") +
+  geom_pointrange() +
+  ggrepel::geom_text_repel(aes(label = round(estimate, 2))) +
   coord_flip() +
   labs(x = "", y = "OLS Estimate") +
+  facet_wrap(~Type) +
   geom_hline(
     yintercept = 0,
     linetype = "dashed"
-  ) +
-  facet_wrap(~DV, ncol = 3)
+  )
 
-ggsave(here("outputs", "predictions_no_ses.png"))
+ggsave(here("outputs", "predictions_policy.png"))
 ```
