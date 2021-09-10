@@ -138,7 +138,7 @@ df <- df %>%
          "income_level" = "Q43",
          "likely_to_vote" = "Q14",
          "re_elect_trump" = "Q15",
-         "state_housing"= "Q24")
+         "state_housing" = "Q24")
 ```
 
 # Recode values

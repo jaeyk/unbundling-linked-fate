@@ -114,7 +114,7 @@ df %>%
   as_survey_design(weights = WEIGHT) %>%
   group_by(race) %>%
   summarise(
-    "N" = survey_count(.),di
+    "N" = survey_count(.),
     "Age" = survey_mean(AGE),
     "Democrat" = survey_mean(as.numeric(as.character(Democrat))),
     "GOP" = survey_mean(as.numeric(as.character(Republican))),
@@ -495,9 +495,12 @@ ggsave(here("outputs", "ols_coeffs.png"))
 
 ```{r}
 # recode
-df$likely_to_vote <- ((max(df$likely_to_vote) + 1) - df$likely_to_vote)
+df$re_elect_trump <- ((max(df$re_elect_trump) + 1) - df$re_elect_trump) # reversed: the larger the greater support 
 
-df$re_elect_trump <- ((max(df$re_elect_trump) + 1) - df$re_elect_trump)
+# resclale 
+df$re_elect_trump <- scales::rescale(df$re_elect_trump, to = c(-1, 1))
+
+df$likely_to_vote <- scales::rescale(df$likely_to_vote, to = c(-1, 1))
 
 df$state_housing <- if_else(df$state_housing == 1, 1, 0)
 

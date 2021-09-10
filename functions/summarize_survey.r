@@ -3,7 +3,7 @@ mean_group_key <- function(data, group_var, key_var) {
     group_by({{ group_var }}) %>%
     summarise(
       mean = mean({{ key_var }}),
-      se = std.error({{ key_var }})
+      se = plotrix::std.error({{ key_var }})
     )
 }
 
