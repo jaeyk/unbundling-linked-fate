@@ -546,6 +546,7 @@ results %>%
     "re_elect_trump" = "Trump re-election preference"
   )) %>%
   filter(DV == "Trump re-election preference") %>%
+  filter(str_detect(Type, "fate|Alternative")) %>%
   ggplot(aes(
     x = race,
     y = estimate,
@@ -586,6 +587,7 @@ results_pp_ols <- bind_rows(
 
 ```{r}
 results_pp_ols %>%
+  filter(str_detect(Type, "fate|Alternative")) %>%
   ggplot(aes(
     x = race,
     y = estimate,
@@ -624,6 +626,7 @@ results_pp <- bind_rows(
 
 ```{r}
 results_pp %>%
+  filter(str_detect(Type, "fate|Alternative")) %>%
   ggplot(aes(
     x = race,
     y = estimate,
