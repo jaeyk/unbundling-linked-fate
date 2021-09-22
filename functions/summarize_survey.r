@@ -1,9 +1,12 @@
+std.error <- function(x) sd(x, na.rm = TRUE)/sqrt(length(x))
+mean.nm <- function(x) mean(x, na.rm = TRUE)
+
 mean_group_key <- function(data, group_var, key_var) {
   data %>%
     group_by({{ group_var }}) %>%
     summarise(
-      mean = mean({{ key_var }}),
-      se = plotrix::std.error({{ key_var }})
+      mean = mean.nm({{ key_var}}),
+      se = std.error({{ key_var}})
     )
 }
 
@@ -17,8 +20,21 @@ summarise_ols <- function(data, func, term){
     unnest(tidied = map(ols, ~ tidy(., conf.int = TRUE))
     ) %>%
     filter(term == {{term}})
-
 }
+
+summarise_ols2 <- function(data, func, term){
+  
+  data %>%
+    group_by(race) %>%
+    nest() %>%
+    mutate(ols = map(data, func)
+    ) %>%
+    unnest(tidied = map(ols, ~ tidy(., conf.int = TRUE))
+    ) %>%
+    filter(term == {{term}})
+  
+}
+
 
 interpret_estimate <- function(model){
   
@@ -85,7 +101,7 @@ mean_group_key_weight <- function(data, group_var, key_var) {
   data %>%
     group_by({{ group_var }}) %>%
     summarise(
-      mean = survey_mean({{ key_var }})
+      mean = survey_mean({{ key_var }}, na.rm = TRUE)
     )
 }
 
@@ -171,7 +187,7 @@ summarise_ci <- function(data, group_var, var1, var2) {
     summarise(
       ci_upper = as.numeric(gmodels::ci(Pearson))[3],
       ci_lower = as.numeric(gmodels::ci(Pearson))[2],
-      mean = mean(Pearson)
+      mean = mean(Pearson, na.rm = TRUE)
     )
 }
 
@@ -277,7 +293,7 @@ group_diff_in_means <- function(data, group_var, var1, var2) {
   data %>%
     group_by({{ group_var }}) %>%
     summarize(
-      diff = mean({{ var1 }}) - mean({{ var2 }}),
+      diff = mean({{ var1 }}, na.rm = TRUE) - mean({{ var2 }}, na.rm = TRUE),
       conf = ((
         t.test({{ var1 }}, {{ var2 }})$conf.int[2]) -
         t.test({{ var1 }}, {{ var2 }})$conf.int[1]) / 2,
@@ -286,6 +302,8 @@ group_diff_in_means <- function(data, group_var, var1, var2) {
         MKinfer::boot.t.test({{ var1 }}, {{ var2 }}, R = 999)$boot.conf.int[1]) / 2
     )
 }
+
+# OLS 
 
 ols <- function(data) {
   lm(difference ~ edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
@@ -302,6 +320,30 @@ ols_lp <- function(data) {
 ols_lh <- function(data) {
   lm_robust(values ~ linked_hurt + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
 }
+
+ols_lh_index <- function(data) {
+  lm_robust(values ~ lf_alternative_index + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
+}
+
+# OLS2
+
+ols_lf2 <- function(data) {
+  lm_robust(state_housing ~ linked_fate + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
+}
+
+ols_lp2 <- function(data) {
+  lm_robust(state_housing ~ linked_progress + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
+}
+
+ols_lh2 <- function(data) {
+  lm_robust(state_housing ~ linked_hurt + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
+}
+
+ols_lh_index2 <- function(data) {
+  lm_robust(state_housing ~ lf_alternative_index + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data)
+}
+
+# GLM
 
 glm_lf <- function(data) {
   
@@ -327,6 +369,16 @@ glm_lp <- function(data) {
 glm_lh <- function(data) {
   
   glm.out <- glm(state_housing ~ linked_hurt + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data, family = "binomial")
+  
+  out.tidy <- tidy(glm.out, conf.int = TRUE) %>%
+    interpret_estimate()
+  
+  return(out.tidy)
+}
+
+glm_lh_index <- function(data) {
+  
+  glm.out <- glm(state_housing ~ lf_alternative_index + edu_level + income_level + Female + Age + Democrat + Republican + Evangelical + for_born, data = data, family = "binomial")
   
   out.tidy <- tidy(glm.out, conf.int = TRUE) %>%
     interpret_estimate()

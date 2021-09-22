@@ -66,7 +66,7 @@ theme_set(theme_pubr())
 
 ```{r}
 # Importing data
-df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey.csv"))
+df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey_not_imputed.csv"))
 
 # Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
@@ -199,7 +199,7 @@ bind_rows(
   ) +
   ylim(c(0, 4))
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot_not_imputed.png"))
 ```
 ## Bar plots
 
@@ -225,7 +225,7 @@ p4 <- bar_plot(df %>%
 
 p1 + p4 + p3 + p2
 
-ggsave(here("outputs", "bar_plot.png"),
+ggsave(here("outputs", "bar_plot_not_imputed.png"),
   width = 10
 )
 ```
@@ -249,7 +249,7 @@ g4 <- draw_ggm(df, "Latinx")
 
 g1 + g4 + g3 + g2
 
-ggsave(here("outputs", "ggm.png"),
+ggsave(here("outputs", "ggm_not_imputed.png"),
   width = 10, height = 12
 )
 ```
@@ -344,7 +344,7 @@ cor_results %>%
   ) +
   geom_hline(aes(yintercept = c(0.7)), linetype = "dashed")
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.png"))
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot_not_imputed.png"))
 ```
 
 # Difference-in-means analysis 
@@ -396,7 +396,7 @@ diff_results %>%
   ) +
   facet_wrap(~Outcome)
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot_not_imputed.png"))
 ```
 
 # Regression analysis 
@@ -563,7 +563,7 @@ results %>%
     linetype = "dashed"
   )
 
-ggsave(here("outputs", "predictions_vote.png"))
+ggsave(here("outputs", "predictions_vote_not_imputed.png"))
 ```
 
 ### Policy preference 
@@ -603,7 +603,7 @@ results_pp_ols %>%
     linetype = "dashed"
   )
 
-ggsave(here("outputs", "predictions_policy_ols.png"))
+ggsave(here("outputs", "predictions_policy_not_imputed_ols.png"))
 ```
 
 #### GLM
@@ -641,5 +641,5 @@ results_pp %>%
     linetype = "dashed"
   )
 
-ggsave(here("outputs", "predictions_policy_glm.png"))
+ggsave(here("outputs", "predictions_policy_not_imputed_glm.png"))
 ```

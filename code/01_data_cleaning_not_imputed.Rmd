@@ -90,34 +90,6 @@ df <- df %>%
   ) # state control housing
 ```
 
-# Impute data 
-
-- Inspecting missing data. 
-- Percentage of missing observations: 2%
-- Dropped policy adoption variables as about half of their responses are missing 
-
-```{r}
-vis_miss(df)
-ggsave(here("outputs", "missing_vars.png"),
-  width = 12
-)
-```
-
-## Multiple imputations 
-
-```{r}
-
-imp <- mice(df,
-  seed = 1234, # for reproducibility
-  m = 5, # the number of imputations
-  maxit = 10, # the max number of iterations
-  method = "pmm", # predictive mean method
-  print = FALSE
-)
-
-df <- mice::complete(imp) # extract the imputed data
-```
-
 # Rescale and rename variables 
 
 ```{r}
@@ -179,5 +151,5 @@ df$race <- df$race %>%
 ```
 
 ```{r}
-write_csv(df, make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey.csv"))
+write_csv(df, make_here("/home/jae/validating-two-linked-fates/processed_data/processed_survey_not_imputed.csv"))
 ```
