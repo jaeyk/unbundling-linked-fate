@@ -71,7 +71,7 @@ df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/p
 # Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
 
-df$race <- factor(df$race, levels = c("Whites", "Blacks", "Latinx", "Asians"))
+df$race <- factor(df$race, levels = c("Latinx", "Asians", "Whites", "Blacks"))
 
 df$likely_to_vote[1:50]
 ```
@@ -506,7 +506,9 @@ df$re_elect_trump <- scales::rescale(df$re_elect_trump, to = c(-1, 1))
 df$likely_to_vote <- scales::rescale(df$likely_to_vote, to = c(-1, 1))
 
 df$state_housing <- if_else(df$state_housing == 1, 1, 0)
+```
 
+```{r}
 df_pol <- df %>%
   pivot_longer(
     cols = c(likely_to_vote, re_elect_trump),

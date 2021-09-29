@@ -71,7 +71,7 @@ df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/p
 # Excluding other respondents (too small to calculate CIs)
 df <- subset(df, race != "Other")
 
-df$race <- factor(df$race, levels = c("Whites", "Blacks", "Latinx", "Asians"))
+df$race <- factor(df$race, levels = c("Latinx", "Asians", "Whites", "Blacks"))
 
 df$likely_to_vote[1:50]
 ```
@@ -353,6 +353,8 @@ ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/cor_coeffs_plot.
 
 ```{r}
 
+df$lf_alternative_index <- (df$linked_hurt + df$linked_progress)/2
+
 diff_fate_progress <- group_diff_in_means(
   df, race, linked_fate, linked_progress
 )
@@ -361,14 +363,21 @@ diff_fate_hurt <- group_diff_in_means(
   df, race, linked_fate, linked_hurt
 )
 
+diff_fate_alternative <- group_diff_in_means(
+  df, race, linked_fate, lf_alternative_index
+)
+
 # Combining the results
 
 diff_results <- bind_rows(
   mutate(diff_fate_progress,
-    Outcome = "Progress - Fate"
+    Outcome = "Linked progress - Linked fate"
   ),
   mutate(diff_fate_hurt,
-    Outcome = "Hurt - Fate"
+    Outcome = "Linked hurt - Linked fate"
+  ),
+  mutate(diff_fate_alternative,
+    Outcome = "Alternative index - Linked fate"
   )
 )
 ```
