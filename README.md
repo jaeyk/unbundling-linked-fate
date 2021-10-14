@@ -1,5 +1,4 @@
-# validating-two-linked-fates
+# Replication Code for Unbundling Linked Fate: How Survey Respondents Interpret Linked Fate Question
 
-**Identifying and validating multiple interpretations of linked fate**
-
+- Corresponding author: Jae Yeon Kim (jkim638@jhu.edu)
 - Preprint: https://osf.io/preprints/socarxiv/k6c9x
