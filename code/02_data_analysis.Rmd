@@ -1,12 +1,6 @@
 ---
 title: "Data analysis"
 author: "Jae Yeon Kim"
-output:
-  pdf_document:
-    toc: yes
-  html_document:
-    theme: united
-    toc: yes
 ---
 
 # Setup 
@@ -72,8 +66,6 @@ df <- read_csv(make_here("/home/jae/validating-two-linked-fates/processed_data/p
 df <- subset(df, race != "Other")
 
 df$race <- factor(df$race, levels = c("Latinx", "Asians", "Whites", "Blacks"))
-
-df$likely_to_vote[1:50]
 ```
 
 ```{r}
@@ -109,9 +101,7 @@ df %>%
   select(!contains("_se")) %>%
   mutate_at(vars(matches("Nn|Age")), function(x) round(x, 0)) %>%
   mutate_at(vars(matches("Democrat|GOP")), function(x) paste0(round(x, 2) * 100, "%")) %>%
-  mutate_at(vars(matches("Income|Education")), function(x) round(x, 2)) %>%
-  kable(format = "latex", booktabs = TRUE) %>%
-  kable_styling(position = "center")
+  mutate_at(vars(matches("Income|Education")), function(x) round(x, 2)) 
 ```
 
 # Descriptive analysis 
@@ -199,7 +189,7 @@ bind_rows(
   ) +
   ylim(c(0, 4))
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/descriptive_stat_plot.png"))
+ggsave(filename = here("outputs", "descriptive_stat_plot.png"))
 ```
 ## Bar plots
 
@@ -405,7 +395,7 @@ diff_results %>%
   ) +
   facet_wrap(~Outcome)
 
-ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"))
+ggsave(make_here("/home/jae/validating-two-linked-fates/outputs/diff_in_means_plot.png"), width = 10)
 ```
 
 # Regression analysis 
@@ -607,7 +597,9 @@ results_pp_ols %>%
   geom_pointrange() +
   ggrepel::geom_text_repel(aes(label = round(estimate, 2))) +
   coord_flip() +
-  labs(x = "", y = "OLS Estimate") +
+  labs(
+    title = "Housing policy preference",
+    x = "", y = "OLS Estimate") +
   facet_wrap(~Type) +
   geom_hline(
     yintercept = 0,
@@ -646,7 +638,7 @@ results_pp %>%
   geom_pointrange() +
   ggrepel::geom_text_repel(aes(label = round(estimate, 2))) +
   coord_flip() +
-  labs(x = "", y = "OLS Estimate") +
+  labs(title = "Housing policy preference", x = "", y = "OLS Estimate") +
   facet_wrap(~Type) +
   geom_hline(
     yintercept = 0,

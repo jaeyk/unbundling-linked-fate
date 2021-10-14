@@ -109,9 +109,7 @@ df %>%
   select(!contains("_se")) %>%
   mutate_at(vars(matches("Nn|Age")), function(x) round(x, 0)) %>%
   mutate_at(vars(matches("Democrat|GOP")), function(x) paste0(round(x, 2) * 100, "%")) %>%
-  mutate_at(vars(matches("Income|Education")), function(x) round(x, 2)) %>%
-  kable(format = "latex", booktabs = TRUE) %>%
-  kable_styling(position = "center")
+  mutate_at(vars(matches("Income|Education")), function(x) round(x, 2)) 
 ```
 
 # Descriptive analysis 
@@ -600,7 +598,9 @@ results_pp_ols %>%
   geom_pointrange() +
   ggrepel::geom_text_repel(aes(label = round(estimate, 2))) +
   coord_flip() +
-  labs(x = "", y = "OLS Estimate") +
+  labs(
+    title = "Housing policy preference",
+    x = "", y = "OLS Estimate") +
   facet_wrap(~Type) +
   geom_hline(
     yintercept = 0,
@@ -639,7 +639,7 @@ results_pp %>%
   geom_pointrange() +
   ggrepel::geom_text_repel(aes(label = round(estimate, 2))) +
   coord_flip() +
-  labs(x = "", y = "OLS Estimate") +
+  labs(title = "Housing policy preference", x = "", y = "OLS Estimate") +
   facet_wrap(~Type) +
   geom_hline(
     yintercept = 0,
